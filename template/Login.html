@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FreeToDo</title>
+    <link type="text/css" rel="stylesheet" href="../static/css/common.css">
+    <link type="text/css" rel="stylesheet" href="../static/css/login.css">
+</head>
+<body>
+    <div id="whole-container">
+        <header><div><img src="../static/img/login/logo_0.png" alt="logo"><h1>FreeToDo</h1></div></header>
+        <div id="main">
+            <div id="main-left"><img src="../static/img/login/girls.png"></div>
+            <div id="main-right">
+                <transition name="fade" mode="out-in">
+                    <form v-if="logining" id="login-form" method="" action="#" key="login">
+                        <div class="form-group">
+                            <label>邮箱：</label><input type="text" name="email">
+                        </div><br>
+                        <div class="form-group">
+                            <label>密码：</label><input type="password" name="password">
+                        </div>
+                        <div class="form-group error-message">
+                            <div >邮箱或密码不正确</div>
+                        </div><br>
+                        <div class="form-group ">
+                            <button class="sub-btn" type="submit">登录</button>
+                        </div><br>
+                        <div class="form-group">
+                            <input id="record" type="checkbox" name="record"><span>十天内免登录</span>
+                            <a href="javascript:;" id="forget-btn">忘记密码?</a>
+                        </div>
+                        <div class="form-group">
+                            <a href="javascript:;" id="not-register" @click="logining=false">木有帐号？马上注册一个</a>
+                        </div>
+                    </form>
+                    <form v-else id="register-form" method="" action="#" key="register">
+                        <div class="form-group">
+                            <label>注册邮箱：</label><input type="text" name="email">
+                        </div><br>
+                        <div class="form-group">
+                            <label>登录密码：</label><input type="password" name="password">
+                        </div><br>
+                        <div class="form-group">
+                            <label>确认密码：</label><input type="password" name="password2">
+                        </div>
+                        <div class="form-group error-message">
+                            <div></div>
+                        </div><br>
+                        <div class="form-group">
+                            <a href="javascript:;" id="has-register" @click="logining=true">已有帐号？</a><button type="submit" class="sub-btn">注册</button>
+                        </div>
+                    </form>
+                </transition>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="../static/lib/vue.js"></script>
+    <script type="text/javascript" src="../static/js/login.js"></script>
+</body>
+</html>

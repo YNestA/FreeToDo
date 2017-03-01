@@ -1,0 +1,31 @@
+html,body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+body{
+    color: #404040;
+    background-color: #fff;
+    font-family: "Microsoft Yahei","Hiragino Sans GB",Helvetica,"Helvetica Neue","微软雅黑",Tahoma,Arial,sans-serif;
+}
+article,aside,dialog,footer,header,section,footer,nav,figure,menu{
+    display:block;
+}
+*:focus{
+    outline:none;
+}
+a{
+    outline: none;
+    text-decoration: none;
+}
+img{
+    border: none;
+}
+
+/*******/
+
+#whole-container{
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+}
