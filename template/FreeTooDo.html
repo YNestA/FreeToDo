@@ -5,17 +5,150 @@
     <title>FreeToDo</title>
     <link type="text/css" rel="stylesheet" href="../static/css/common.css">
     <link type="text/css" rel="stylesheet" href="../static/css/FreeToDo.css">
+    <link type="text/css" rel="stylesheet" href="../static/css/menu.css">
+    <link type="text/css" rel="stylesheet" href="../static/css/task.css">
 </head>
 <body>
     <div id="whole-container">
         <div id="whole-menu">
             <div id="user-head">
                 <img src="../static/img/menu/user_head.png">
+                <i></i>
+            </div>
+            <div id="user-name">用户昵称</div>
+            <nav>
+                <ul>
+                    <menu-item
+                            :name="item.name"
+                            :cname="item.cname"
+                            :current="item.current"
+                            @choose="choose"
+                            v-for="item in menuItems">
+                    </menu-item>
+                </ul>
+            </nav>
+            <div id="bottom-menu">
+                <ul>
+                    <li id="menu-search" :class="{current:searching}" @click="search"><i></i></li>
+                    <li id="menu-system" @click="system">...</li>
+                    <ul v-show="systeming" id="system">
+                            <li>帐号设置</li>
+                            <li>使用帮助</li>
+                            <li>退出登录</li>
+                    </ul>
+                </ul>
             </div>
         </div>
+        <div id="main">
+            <div id="apps-warp">
+                <div id="task-app">
+                <div class="task-app-title">
+                    <div class="title-left">
+                        <span class="date">2017-03-02</span>
+                        <i class="date-left-btn"></i>
+                        <i class="date-right-btn"></i>
+                        <a  class="today-btn" href="javascript:;">今天</a>
+                        <ul>
+                            <li class="current">日</li>
+                            <li>周</li>
+                            <li>月</li>
+                        </ul>
+                    </div>
+                    <div class="title-right">
+                        <select class="right-menu1">
+                            <option>四象限</option>
+                            <option>时间轴</option>
+                        </select>
+                        <select class="right-menu2">
+                            <option>全部</option>
+                            <option>已完成</option>
+                            <option>未完成</option>
+                        </select><a class="create-task" @click="createTask">+</a>
+                    </div>
+                </div>
+                <div id="four-quadrant">
+                    <div class="four-top">
+                        <quadrant :level="1" :tasks="tasks1">
+                            <span slot="rankDesc" class="rank-desc">很重要-很紧急</span>
+                        </quadrant>
+                        <quadrant :level="2" :tasks="tasks2">
+                            <span slot="rankDesc" class="rank-desc">重要-不紧急</span>
+                        </quadrant>
+                    </div>
+                    <div class="four-bottom">
+                        <quadrant :level="3" :tasks="tasks3">
+                            <span slot="rankDesc" class="rank-desc">不重要-紧急</span>
+                        </quadrant>
+                        <quadrant :level="4" :tasks="tasks4">
+                            <span slot="rankDesc" class="rank-desc">不重要-不紧急</span>
+                        </quadrant>
+                    </div>
+                </div>
+                <div id="time-axix"></div>
+            </div>
+                <div id="note-app"></div>
+                <div id="project-app"></div>
+                <div id="tag-app"></div>
+                <div id="search-app"></div>
+            </div>
+            <transition name="task-detail">
+                <div id="task-detail" v-show="show">
+                    <div class="title">
+                        <img src="../static/img/menu/user_head.png"><i></i>
+                        <div class="action">
+                            <a href="javascript:;">删除</a>
+                            <a href="javascript:;" @click="close">关闭</a>
+                        </div>
+                    </div>
+                    <ul>
+                        <li><label><input type="checkbox"><span></span></label><input type="text"></li>
+                        <li>
+                            <label><input type="checkbox"><span></span><span>很重要-很紧急</span></label>
+                            <label><input type="checkbox"><span></span><span>重要-不紧急</span></label>
+                            <label><input type="checkbox"><span></span><span>不重要-紧急</span></label>
+                            <label><input type="checkbox"><span></span><span>不重要-不紧急</span></label>
+                        </li>
+                        <li><i></i><input type="text"><i></i><input type="text"></li>
+                        <li><i></i><input type="text" placeholder="项目名称"></li>
+                        <li><i></i><input type="text" placeholder="+标签"></li>
+                    </ul>
+                </div>
+            </transition>
+        </div>
     </div>
+    <script type="x-template" id="menu-item-template">
+        <li :id="id" :class="{current:current}" @click="choose">
+            <i></i>[[cname]]
+        </li>
+    </script>
+    <script type="x-template" id="quadrant-template">
+        <div :id="quadrantID" class="quadrant">
+            <div class="rank-line" @click.stop="clickAdd">
+                <slot name="rankDesc"></slot>
+                <a class="add" href="javascript:;">+</a>
+                <transition name="add">
+                    <div v-show="adding" class="task-create" @click.stop="">
+                        <div class="create-input"><input type="text" placeholder="输入任务，按Enter键完成"><i></i></div>
+                        <div class="create-time">
+                            <input type="text" readonly value="2017-03-04 16:30"><i></i><input type="text" value="2017-03-04 16:30" readonly><span class="more-set">...</span>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+            <ul>
+                <li v-for="task in tasks">
+                    <label>
+                        <input type="checkbox">
+                        <span></span>
+                    </label>
+                    <span>[[task.content]]</span><time>[[task.startTime]]</time>
+                </li>
+            </ul>
+        </div>
+    </script>
     <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="../static/lib/vue.js"></script>
+    <script type="text/javascript" src="../static/js/class.js"></script>
     <script type="text/javascript" src="../static/js/main.js"></script>
 </body>
 </html>

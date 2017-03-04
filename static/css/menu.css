@@ -1,0 +1,134 @@
+#user-head{
+    position: relative;
+    height: 50px;
+    text-align: center;
+    margin-top: 10px;
+    cursor: pointer;
+}
+#user-head i,#user-head img{
+    width: 50px;
+    height: 50px;
+}
+#user-head i{
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    background: url(../img/icon.png) -126px -1633px;
+}
+#user-name{
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+#whole-menu nav{
+    border-top:1px solid #444c4f;
+    border-bottom: 1px solid #444c4f;
+}
+#whole-menu nav ul{
+}
+#whole-menu ul{
+    margin:0;
+    padding: 0;
+    list-style-type: none;
+}
+#whole-menu nav ul li{
+    cursor:pointer;
+    height: 50px;
+    line-height: 50px;
+}
+#whole-menu nav ul li:hover,#menu-system:hover,#menu-search:hover{
+    background-color: rgb(63,71,74);
+}
+
+#whole-menu nav ul li i{
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    margin: 0 5px 0 10px;
+    vertical-align: middle;
+    background-image: url(../img/icon.png);
+}
+#menu-task i{
+    background-position:  0px -1328px;
+}
+#menu-task.current i{
+    background-position: -32px -1328px;
+}
+#menu-note i{
+    background-position: 0px -1360px;
+}
+#menu-note.current i{
+    background-position: -32px -1360px;
+}
+#menu-project i{
+    background-position: 0px -1392px;
+}
+#menu-project.current i{
+    background-position: -32px -1392px;
+}
+#menu-tag i{
+    background-position: 0px -1488px;
+}
+#menu-tag.current i{
+    background-position: -32px -1488px;
+}
+#whole-menu nav ul li.current,#menu-search.current,#menu-system.current{
+    background-color: #2c3032;
+    color:#2bbff3;
+}
+
+#bottom-menu{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    margin-bottom: 25px;
+}
+#bottom-menu>ul li{
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+}
+#bottom-menu>ul li i{
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    vertical-align: middle;
+    background-image: url(../img/icon.png);
+}
+#menu-search i{
+    background-position: 0 -1612px;
+}
+#menu-search.current i{
+    background-position: -32px -1612px;
+}
+#menu-system{
+    position: relative;
+    font-size: 30px;
+    line-height: 30px !important;
+    font-weight: 600;
+}
+#system{
+    position: absolute;
+    bottom:-25px;
+    left: 90px;
+    font-size: 14px;
+    width: 150px;
+    color:#444;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-left:0;
+    border-bottom:0;
+}
+#system li{
+    padding: 5px;
+    border-bottom: 1px solid #e5e5e5;
+}
+#system li:last-child{
+    border: 0;
+}
+#system li:hover{
+    color: #fff;
+    background-color: #444;
+}

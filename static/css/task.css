@@ -1,0 +1,392 @@
+#apps-warp{
+    height: 100%;
+}
+#task-app{
+    position: relative;
+    height: 100%;
+}
+div.task-app-title{
+    position: absolute;
+    width: 100%;
+    height: 45px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #e5e5e5;
+}
+div.title-left,div.title-right{
+    height: 100%;
+    line-height: 45px;
+}
+div.title-left {
+    float: left;
+}
+div.title-right{
+    float: right;
+}
+div.title-left>*,div.title-right >*{
+    display: inline-block;
+    vertical-align: middle;
+}
+div.task-app-title ul{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 28px;
+    list-style-type: none;
+    border: 1px solid #e5e5e5;
+    border-right:none;
+}
+div.task-app-title ul li{
+    float: left;
+    cursor: pointer;
+    padding: 0 12px;
+    height: 100%;
+    line-height: 28px;
+    border-right: 1px solid #e5e5e5;
+}
+div.task-app-title ul li.current,div.task-app-title ul li:hover{
+    background-color: #2bbff3;
+    color: white;
+}
+div.title-right{
+    float: right;
+}
+span.date{
+    width: 100px;
+}
+i.date-left-btn,i.date-right-btn{
+    width: 25px;
+    height: 27px;
+    cursor: pointer;
+    background-image: url(../img/icon.png);
+}
+i.date-left-btn{
+    background-position: 0 -106px;
+}
+i.date-right-btn{
+    background-position: -3px -138px;
+}
+
+i.date-left-btn:hover{
+    background-position: -32px -106px;
+}
+i.date-right-btn:hover{
+    background-position: -35px -138px;
+}
+a.create-task{
+    cursor: pointer;
+    font-size: 40px;
+    line-height: 35px;
+    width: 25px;
+    height: 40px;
+    margin-left: 10px;
+    color: rgb(0,192,238);
+}
+a.create-task:hover{
+    color: #2a6496;
+}
+a.today-btn{
+    display: inline-block;
+    background-color: #2bbff3;
+    height: 18px;
+    padding: 5px 12px;
+    line-height: 18px;
+    color: white;
+    margin-right: 15px;
+}
+div.title-right select{
+    width: 70px;
+    text-align: center;
+    border: 1px solid #e5e5e5;
+    background-color: #fff;
+    cursor: pointer;
+    margin-right: 10px;
+    box-sizing: border-box;
+}
+div.title-right select:hover{
+    color: #fff;
+    background-color: #2bbff3;
+}
+#four-quadrant{
+    padding-top: 45px;
+    box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
+}
+div.four-top,div.four-bottom{
+    height: 50%;
+    position: relative;
+}
+div.quadrant{
+    box-sizing: border-box;
+    height: 100%;
+    width: 50%;
+    float: left;
+    overflow: auto;
+    padding-top: 10px;
+}
+#quadrant-1,#quadrant-2{
+    border-bottom: 1px solid #e5e5e5;
+}
+#quadrant-1,#quadrant-3{
+    border-right: 1px solid #e5e5e5;
+}
+div.quadrant div.rank-line{
+    position: relative;
+    margin: 0 20px;
+    height: 45px;
+    padding: 0 10px;
+    z-index: 20;
+    cursor: pointer;
+}
+div.rank-line span.rank-desc{
+    height: 45px;
+    line-height: 45px;
+}
+div.rank-line a.add{
+    display: block;
+    float: right;
+    width: 30px;
+    height: 45px;
+    line-height: 40px;
+    font-size: 30px;
+    text-align: center;
+    color: #8e9298;
+}
+div.quadrant ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    margin: 0 20px;
+    z-index: 5;
+}
+div.quadrant ul li{
+    height: 40px;
+    padding: 0 10px;
+    line-height: 40px;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 1px dashed #e5e5e5;
+}
+div.quadrant ul li>*{
+    display: inline-block;
+    vertical-align: middle;
+}
+div.quadrant ul li>span{
+    width: 50%;
+    height: 100%;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+div.quadrant ul li time{
+    float: right;
+    font-size: 14px;
+    color: #bcc3c5;
+}
+div.quadrant ul li:hover{
+    background-color: #e5e5e5;
+}
+div.quadrant ul li label{
+    height: 40px;
+    line-height: 40px;
+}
+div.quadrant ul li input{
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+}
+div.quadrant ul li input+span{
+    display: inline-block;
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+#quadrant-1 div.rank-line{
+    background-color: #ffede7;
+    color: #f76333;
+}
+#quadrant-1 ul li input+span{
+    background: url(../img/icon.png) 0px -942px;
+}
+#quadrant-1 ul li input:checked+span{
+    background-position: -32px -942px;
+}
+#quadrant-2 div.rank-line{
+    background-color: #ffefcb;
+    color:#feae6a;
+}
+#quadrant-2 ul li input+span{
+    background: url(../img/icon.png) 0px -974px;
+}
+#quadrant-2 ul li input:checked+span{
+    background-position: -32px -974px;
+}
+#quadrant-3 div.rank-line{
+    background-color: #d6f4fe;
+    color: #3fb6da;
+}
+#quadrant-3 ul li input+span{
+    background: url(../img/icon.png) 0px -1006px;
+}
+#quadrant-3 ul li input:checked+span{
+    background-position: -32px -1006px;
+}
+#quadrant-4 div.rank-line{
+    background-color: #efd;
+    color: #89c557;
+}
+#quadrant-4 ul li input+span{
+    background: url(../img/icon.png) 0px -1038px;
+}
+#quadrant-4 ul li input:checked+span{
+    background-position: -32px -1038px;
+}
+div.rank-line div.task-create{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+}
+div.create-input{
+    position: relative;
+    width: 100%;
+    height: 35px;
+}
+div.create-input input{
+    box-sizing: border-box;
+    padding: 0 35px 0 10px;
+    width: 100%;
+    height: 35px;
+    border: 1px solid;
+}
+div.create-input i{
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 35px;
+    height: 35px;
+    background: url(../img/icon.png) 0 -166px;
+}
+#quadrant-1 div.create-input input{
+    background-color: #ffede7;
+    border-color: #f76333;
+}
+#quadrant-2 div.create-input input{
+    background-color: #ffefcb;
+    border-color: #feae6a;
+}
+#quadrant-3 div.create-input input{
+    background-color: #d6f4fe;
+    border-color: #3fb6da;
+}
+#quadrant-4 div.create-input input{
+    background-color: #efd;
+    border-color: #89c557;
+}
+div.create-time{
+    position: relative;
+    height: 40px;
+    padding: 0 10px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-top:none ;
+}
+div.create-time >*{
+    display: inline-block;
+    vertical-align: middle;
+}
+div.create-time i{
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background: url(../img/icon.png) -3px -138px;
+}
+div.create-time input{
+    box-sizing: border-box;
+    background: #fff;
+    border: none;
+    width: 115px;
+    height: 100%;
+    line-height: 40px;
+    font-size: 15px;
+    cursor: pointer;
+}
+div.create-time span.more-set{
+    cursor: pointer;
+    position: absolute;
+    top: 8px;
+    right: 0;
+    font-size: 24px;
+    color:#a5a5a5;
+    line-height: 15px;
+    text-align: center;
+    width:40px;
+    height: 24px;
+    border-left: 2px solid #e5e5e5;
+}
+
+.add-enter-active{
+    animation: add-in 0.2s;
+}
+.add-leave-active{
+    animation: add-out 0.2s;
+}
+@keyframes add-in{
+    from{
+        height: 0;
+    }
+    to{
+        height: 76px;
+    }
+}
+@keyframes add-out{
+    from{
+        height: 76px;
+    }
+    to{
+        height: 0px;
+    }
+}
+
+/*****************/
+
+#task-detail{
+    position: absolute;
+    overflow: hidden;
+    width: 400px;
+    height: 100%;
+    background-color: #fff;
+    z-index: 100;
+    top: 0;
+    right: 0;
+    box-shadow: 0 0 8px 3px rgba(0,0,0,0.25);
+}
+
+.task-detail-enter-active{
+    animation: task-detail-in 0.5s linear;
+}
+.task-detail-leave-active{
+    animation: task-detail-out 0.5s linear;
+}
+
+@keyframes task-create-in {
+    from{
+        width: 0px;
+    }
+    to{
+        width: 400px;
+    }
+}
+@keyframes task-create-out {
+    from{
+        width: 400px;
+    }
+    to{
+        width: 0px;
+    }
+}
