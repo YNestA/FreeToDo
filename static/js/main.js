@@ -1,14 +1,12 @@
 $(document).ready(function () {
     var bus=new Vue();
     bus.$on("createTask",function () {
-//        $("#apps-warp").get(0).style.marginRight="400px";
-        $("#apps-warp").animate({marginRight:"400px"},500,"linear");
-        taskDetailVM.show=true;
+        $("#task-detail").animate({width:"400px"},200,"linear");
+        $("#apps-warp").animate({marginRight:"400px"},200,"linear");
     });
     bus.$on("closeTaskDetail",function () {
-//        $("#apps-warp").get(0).style.marginRight="0px";
-        $("#apps-warp").animate({marginRight:"0px"},500,"linear");
-        taskDetailVM.show=false;
+        $("#task-detail").animate({width:"0px"},200,"linear");
+        $("#apps-warp").animate({marginRight:"0px"},200,"linear");
     })
 
     var menuItems=[
@@ -94,13 +92,22 @@ $(document).ready(function () {
             }
         },
     }
+    var axixTasks={
+        delimiters:["[[","]]"],
+        template:"#axix-tasks-template",
+        props:["tasks","day"],
+    }
+
     var taskAppVM=new Vue({
         el:"#task-app",
         components:{
             "quadrant":quadrantComponent,
+            "axix-tasks":axixTasks,
         },
         data:{
-            tasks:[new Task('0','啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊',1,"02/08 23:30","2017",null,[])],
+            tasks:[new Task('0','啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊',1,"02/08 23:30","2017-03-01 00:00",null,[])],
+            axixing:false,
+            axixAdding:false,
         },
         methods:{
             _comTasks:function (level) {
@@ -134,7 +141,8 @@ $(document).ready(function () {
     var taskDetailVM=new Vue({
         el:"#task-detail",
         data:{
-            show:false,
+            newing:true,
+            level:1,
         },
         methods:{
             close:function () {
@@ -142,4 +150,5 @@ $(document).ready(function () {
             },
         },
     });
+
 });

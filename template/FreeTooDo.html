@@ -66,7 +66,7 @@
                         </select><a class="create-task" @click="createTask">+</a>
                     </div>
                 </div>
-                <div id="four-quadrant">
+                <div v-if="!axixing" id="four-quadrant">
                     <div class="four-top">
                         <quadrant :level="1" :tasks="tasks1">
                             <span slot="rankDesc" class="rank-desc">很重要-很紧急</span>
@@ -84,36 +84,64 @@
                         </quadrant>
                     </div>
                 </div>
-                <div id="time-axix"></div>
+                <div v-else id="time-axix">
+                    <div id="axix-add">
+                        <div :class="['axix-add-icon',axixAdding?'axix-adding-icon':'']" @click="axixAdding=!axixAdding"><i></i></div>
+                        <transition name="axix-add" mode="out-in">
+                            <div v-if="!axixAdding" class="axix-add-btn" key="1">
+                                <div>新建任务</div>
+                            </div>
+                            <div v-else class="axix-add-detail" key="2">
+                                <div class="axix-add-input"><input type="text" placeholder="按Enter完成输入"></div>
+                                <div class="axix-add-setting">
+                                    <label class="level-btn level-btn-1"><input type="checkbox"><span></span></label><label class="level-btn level-btn-2"><input type="checkbox"><span></span></label><label class="level-btn level-btn-3"><input type="checkbox"><span></span></label><label class="level-btn level-btn-4"><input type="checkbox"><span></span></label>
+                                    <div class="axix-add-setting-time"><input type="text" value="2016-03-23 16:30" readonly><i></i><input type="text" value="2016-03-23 16:30" readonly></div>
+                                    <div>...</div>
+                                </div>
+                            </div>
+                        </transition>
+                    </div>
+                    <div id="task-axix">
+                        <hr>
+                        <axix-tasks :tasks="tasks" day="2017-02-28 星期二">
+                        </axix-tasks>
+                    </div>
+                </div>
             </div>
                 <div id="note-app"></div>
                 <div id="project-app"></div>
                 <div id="tag-app"></div>
                 <div id="search-app"></div>
             </div>
-            <transition name="task-detail">
-                <div id="task-detail" v-show="show">
-                    <div class="title">
+            <div id="task-detail">
+                <div class="title">
+                    <div>
                         <img src="../static/img/menu/user_head.png"><i></i>
-                        <div class="action">
-                            <a href="javascript:;">删除</a>
-                            <a href="javascript:;" @click="close">关闭</a>
-                        </div>
                     </div>
-                    <ul>
-                        <li><label><input type="checkbox"><span></span></label><input type="text"></li>
-                        <li>
-                            <label><input type="checkbox"><span></span><span>很重要-很紧急</span></label>
-                            <label><input type="checkbox"><span></span><span>重要-不紧急</span></label>
-                            <label><input type="checkbox"><span></span><span>不重要-紧急</span></label>
-                            <label><input type="checkbox"><span></span><span>不重要-不紧急</span></label>
-                        </li>
-                        <li><i></i><input type="text"><i></i><input type="text"></li>
-                        <li><i></i><input type="text" placeholder="项目名称"></li>
-                        <li><i></i><input type="text" placeholder="+标签"></li>
-                    </ul>
+                    <div class="action">
+                        <template v-if="newing">
+                            <a href="javascript:;" @click="close">取消</a>
+                            <a href="javascript:;">保存</a>
+                        </template>
+                        <template v-else>
+                            <a class="delete" href="javascript:;">删除</a>
+                            <a href="javascript:;" @click="close">关闭</a>
+                        </template>
+                    </div>
                 </div>
-            </transition>
+                <ul>
+                    <li id="task-detail-content" :class="'task-detail-content-'+level"><label v-if="newing" :class="['level-done-btn','level-done-btn-'+level]"><input type="checkbox"><span></span></label><input type="text" placeholder="输入任务内容"></li>
+                    <li id="task-detail-level">
+                        <label class="level-btn level-btn-1"><input v-model="level" type="radio" name="level" :value="1"><span></span></label><span v-show="level==1">很重要-很紧急</span>
+                        <label class="level-btn level-btn-2"><input v-model="level" type="radio" name="level" :value="2"><span></span></label><span v-show="level==2">重要-不紧急</span>
+                        <label class="level-btn level-btn-3"><input v-model="level" type="radio" name="level" :value="3"><span></span></label><span v-show="level==3">不重要-紧急</span>
+                        <label class="level-btn level-btn-4"><input v-model="level" type="radio" name="level" :value="4"><span></span></label><span v-show="level==4">不重要-不紧急</span>
+                    </li>
+                    <li id="task-detail-time"><i></i><input type="text" value="2013-03-07 09:30" readonly><i></i><input type="text" value="2013-03-07 09:30" readonly></li>
+                    <li><i></i><input type="text" placeholder="项目名称"></li>
+                    <li><i></i><input type="text" placeholder="+标签"></li>
+                </ul>
+            </div>
         </div>
     </div>
     <script type="x-template" id="menu-item-template">
@@ -142,6 +170,24 @@
                         <span></span>
                     </label>
                     <span>[[task.content]]</span><time>[[task.startTime]]</time>
+                </li>
+            </ul>
+        </div>
+    </script>
+    <script type="x-template" id="axix-tasks-template">
+        <div class="axix-tasks">
+            <div class="axix-tasks-title">
+                <i></i>
+                <time>[[day]]</time>
+            </div>
+            <ul>
+                <li v-for="task in tasks">
+                    <time>[[task.startTime.slice(-5)]]</time>
+                    <label :class="['level-done-btn','level-done-btn-'+task.level]"><input type="checkbox"><span></span></label>
+                    <div>
+                        <div class="axix-task-content">[[task.content]]</div>
+                        <div><i></i><time>[[task.endTime]]</time><i></i></div>
+                    </div>
                 </li>
             </ul>
         </div>

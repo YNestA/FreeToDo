@@ -358,7 +358,7 @@ div.create-time span.more-set{
 #task-detail{
     position: absolute;
     overflow: hidden;
-    width: 400px;
+    width: 0px;
     height: 100%;
     background-color: #fff;
     z-index: 100;
@@ -367,26 +367,410 @@ div.create-time span.more-set{
     box-shadow: 0 0 8px 3px rgba(0,0,0,0.25);
 }
 
-.task-detail-enter-active{
-    animation: task-detail-in 0.5s linear;
+#task-detail div.title{
+    position: relative;
+    display: block;
+    margin: 0 10px;
+    height: 45px;
+    line-height: 45px;
 }
-.task-detail-leave-active{
-    animation: task-detail-out 0.5s linear;
+#task-detail div.title >*{
+    display: inline-block;
+    vertical-align: middle;
+}
+#task-detail div.title >div:first-child{
+    position: relative;
+    width: 26px;
+    height: 26px;
+}
+#task-detail div.title >div:first-child img{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+#task-detail div.title >div:first-child i{
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(../img/icon.png) -67px -1327px;
+}
+#task-detail div.action{
+    position: absolute;
+    height: 100%;
+    right: 0;
+}
+#task-detail div.action a{
+    display: inline-block;
+    margin: 0 10px;
+    height: 100%;
 }
 
-@keyframes task-create-in {
-    from{
-        width: 0px;
-    }
-    to{
-        width: 400px;
-    }
+#task-detail div.action a:first-child{
+    color: #a5a5a5;
 }
-@keyframes task-create-out {
-    from{
-        width: 400px;
-    }
-    to{
-        width: 0px;
-    }
+#task-detail div.action a:last-child{
+    color: #00c0ee;
+}
+#task-detail div.action a.delete{
+    color: #e0622c;
+}
+
+#task-detail ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+#task-detail ul li{
+    height: 40px;
+    line-height: 40px;
+    padding: 0 10px;
+    border-bottom:1px solid #e5e5e5;
+}
+#task-detail ul li>*{
+    display: inline-block;
+    vertical-align: middle;
+}
+.task-detail-content-1{
+    background-color: #ffede7;
+}
+.task-detail-content-2{
+    background-color: #ffefcb;
+}
+.task-detail-content-3{
+    background-color: #d6f4fe;
+}
+.task-detail-content-4{
+    background-color: #efd;
+}
+
+#task-detail-content input{
+    height: 100%;
+    box-sizing: border-box;
+    width: 300px;
+    border: none;
+    background-color: transparent;
+}
+#task-detail-content label{
+    position: relative;
+    left: -3px;
+}
+
+#task-detail-level >span{
+    font-size: 13px;
+}
+#task-detail-level label{
+    margin-left: 4px;
+}
+#task-detail-time i{
+    width: 14px;
+    height: 15px;
+    background:url(../img/icon.png) -15px -145px;
+}
+#task-detail-time i:first-child{
+    width: 32px;
+    height: 32px;
+    background:url(../img/icon.png)  0 -360px;
+}
+#task-detail-time:hover i:first-child{
+    background: url(../img/icon.png) -32px -360px;
+}
+#task-detail-time input{
+    box-sizing: border-box;
+    width: 125px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+/**********************/
+
+#time-axix{
+    padding-top: 45px;
+    box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
+}
+#axix-add{
+    position: relative;
+    border-bottom: 1px solid #e5e5e5;
+}
+.axix-add-icon{
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    margin:auto 0 auto 52px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: #e0e4e6;
+    border-radius: 50%;
+}
+.axix-add-icon i{
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: url(../img/icon.png);
+    background-position: -32px -72px;
+    transition: all 0.1s;
+}
+.axix-adding-icon i{
+    transform: rotate(45deg);
+}
+.axix-add-btn{
+    display: inline-block;
+    height: 50px;
+    line-height: 50px;
+    margin-left: 100px;
+    vertical-align: middle;
+    color: #999;
+}
+.axix-add-detail{
+    margin-left: 100px;
+}
+.axix-add-input{
+    position: relative;
+    height: 40px;
+    box-sizing: border-box;
+}
+.axix-add-input input{
+    position: absolute;
+    bottom: 0;
+    padding: 5px;
+    border: none;
+    width: 500px;
+    border-bottom: 1px dashed #e5e5e5;
+}
+.axix-add-setting{
+    height: 40px;
+    line-height: 40px;
+}
+.axix-add-setting >*{
+    display: inline-block;
+    vertical-align: middle;
+}
+label.level-btn{
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    position: relative;
+}
+label.level-btn input{
+    position: absolute;
+    opacity: 0;
+    z-index:-1;
+}
+
+label.level-btn input+span{
+    display: inline-block;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    background-image: url(../img/icon.png);
+}
+label.level-btn-1 input+span{
+    background-position: -4px -591px;
+}
+label.level-btn-1 input:checked+span{
+    background-position: -36px -591px;
+}
+label.level-btn-2 input+span{
+    background-position: -4px -625px;
+}
+label.level-btn-2 input:checked+span{
+    background-position: -36px -625px;
+}
+label.level-btn-3 input+span{
+    background-position: -4px -657px;
+}
+label.level-btn-3 input:checked+span{
+    background-position: -36px -657px;
+}
+label.level-btn-4 input+span{
+    background-position: -4px -689px;
+}
+label.level-btn-4 input:checked+span{
+    background-position: -36px -689px;
+}
+
+div.axix-add-setting-time{
+    height: 25px;
+    line-height: 25px;
+    border: 2px solid #c5c5c5;
+    border-top: none;
+    border-bottom: none;
+}
+div.axix-add-setting-time >*{
+    display: inline-block;
+    vertical-align: middle;
+}
+div.axix-add-setting-time input{
+    box-sizing: border-box;
+    border: none;
+    width: 150px;
+    padding: 0 10px;
+    font-size: 16px;
+}
+div.axix-add-setting-time i{
+    width: 25px;
+    height: 25px;
+    background: url(../img/icon.png) -4px -138px;
+}
+div.axix-add-setting-time+div{
+    margin-left: 10px;
+    font-size: 25px;
+    height: 25px;
+    color: #a5a5a5;
+    line-height: 15px;
+}
+
+.axix-add-enter,.axix-add-leave-active{
+    opacity: 0;
+}
+
+.axix-add-enter-active,.axix-add-leave-active{
+    transition: all 0.1s;
+}
+
+#task-axix{
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+    padding-bottom: 80px;
+}
+#task-axix hr{
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 1px;
+    height: 100%;
+    background-color: #eceeef;
+    border: none;
+    position: absolute;
+    left: 68px;
+}
+.axix-tasks-title{
+    position: relative;
+    height: 40px;
+}
+.axix-tasks-title i{
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    left: 64px;
+    top: 15px;
+    background-color: #e0e4e6;
+    border-radius: 50%;
+}
+.axix-tasks-title time{
+    margin-left: 100px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 15px;
+    color: #999;
+}
+
+.axix-tasks ul{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.axix-tasks ul li{
+    height: 45px;
+}
+.axix-tasks ul li >time{
+    float: left;
+    display: block;
+    width: 53px;
+    color: #999;
+    text-align: center;
+    height: 31px;
+    line-height: 31px;
+    font-size: 15px;
+}
+
+label.level-done-btn{
+    display: inline-block;
+    width: 31px;
+    height: 31px;
+    position: relative;
+}
+label.level-done-btn input{
+    position: absolute;
+    opacity:0;
+    z-index: -1;
+}
+label.level-done-btn input+span{
+    display: inline-block;
+    width: 31px;
+    height: 31px;
+    cursor: pointer;
+    background-image: url(../img/icon.png);
+}
+
+label.level-done-btn-1 input+span{
+    background-position: 0 -942px;
+}
+label.level-done-btn-1 input:checked+span{
+    background-position: -32px -942px;
+}
+label.level-done-btn-2 input+span{
+    background-position: 0 -974px;
+}
+label.level-done-btn-2 input:checked+span{
+    background-position: -32px -974px;
+}
+label.level-done-btn-3 input+span{
+    background-position: 0 -1006px;
+}
+label.level-done-btn-3 input:checked+span{
+    background-position: -32px -1006px;
+}
+label.level-done-btn-4 input+span{
+    background-position: 0 -1038px;
+}
+label.level-done-btn-4 input:checked+span{
+    background-position: -32px -1038px;
+}
+.axix-tasks ul li label{
+    float: left;
+}
+.axix-tasks ul li >div{
+    margin-left: 100px;
+    height: 100%;
+    cursor: pointer;
+}
+.axix-tasks ul li >div:hover{
+    background-color: #f9f9f9;
+}
+.axix-task-content{
+    font-size: 15px;
+    padding-left: 5px;
+}
+.axix-task-content+div{
+    color: #999;
+    font-size: 13px;
+}
+.axix-task-content+div >*{
+    display: inline-block;
+    vertical-align: middle;
+}
+.axix-task-content+div i:first-child{
+    width: 24px;
+    height: 24px;
+    background:url(../img/icon.png) -4px -364px;
+}
+.axix-task-content+div time{
+    height: 24px;
+    line-height: 24px;
+    margin-left: 10px;
+}
+.axix-task-content+div time+i{
+    height: 24px;
+    width: 24px;
+    margin-left: 10px;
+    background: url(../img/icon.png) -4px -267px;
 }
