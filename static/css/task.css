@@ -18,6 +18,9 @@ div.title-left,div.title-right{
     line-height: 45px;
 }
 div.title-left {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
     float: left;
 }
 div.title-right{
@@ -46,6 +49,7 @@ div.task-app-title ul li{
 }
 div.task-app-title ul li.current,div.task-app-title ul li:hover{
     background-color: #2bbff3;
+    border-color: #2bbff3;
     color: white;
 }
 div.title-right{
@@ -103,10 +107,7 @@ div.title-right select{
     margin-right: 10px;
     box-sizing: border-box;
 }
-div.title-right select:hover{
-    color: #fff;
-    background-color: #2bbff3;
-}
+
 #four-quadrant{
     padding-top: 45px;
     box-sizing: border-box;
@@ -484,6 +485,76 @@ div.create-time span.more-set{
     border: none;
     background-color: transparent;
     cursor: pointer;
+}
+
+#task-detail-project i{
+    width: 32px;
+    height: 32px;
+    background: url(../img/icon.png) 0 -425px;
+}
+#task-detail-project:hover i{
+    background: url(../img/icon.png) -32px -425px;
+}
+#task-detail-project input{
+    width: 125px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+#task-detail-tags{
+    height: auto !important;
+    min-height: 40px;
+}
+#task-detail-tags >i{
+    width: 32px;
+    height: 32px;
+    background: url(../img/icon.png) 0 -457px;
+}
+#task-detail-tags:hover >i{
+    background: url(../img/icon.png) -32px -457px;
+}
+#task-detail-tags >span{
+    display: inline-block;
+    height: 32px;
+}
+#task-detail-tags input{
+    border: none;
+    background-color: transparent;
+    width: 50px;
+    cursor: pointer;
+}
+#task-detail-tags span.task-detail-tag{
+    margin-right:20px ;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    position: relative;
+    padding: 0 10px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 14px;
+    background-color:#f8f8f8;
+    border: 1px solid #e8e8e8;
+}
+span.task-detail-tag i{
+    display: none;
+    position: absolute;
+    right: -6px;
+    top: -6px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    background: url(../img/icon.png) 1px -754px;
+}
+#task-detail-tags span.task-detail-tag:hover i{
+    display: inline-block;
+}
+span.task-detail-tag i:hover{
+    background: url(../img/icon.png) -31px -754px;
+}
+#task-detail-tags span.task-detail-tag:hover{
+    border-color: #3fb6da;
+    background-color: #d6f4fe;
 }
 /**********************/
 

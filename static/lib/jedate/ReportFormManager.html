@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>报表管理</title>
+	<script type="text/javascript" src="jedate.js"> </script>
+	<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/common.css">
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+	<style >
+		body{
+			padding: 50px 0 50px 0px;
+		}
+		.datainp{ width:15%;height: 30px;border: 1px #ccc solid;}
+		.datep{ margin-bottom: 40px; }
+		.lab{width: 8%; }
+		.button{margin-right: 0px}
+	</style>
+</head>
+<body>
+		<div id="reportForm-header">
+			<p align="center">报表管理</p>
+		</div>
+
+		<div id="reportForm-chooseDate" align="center">
+			<label class="lab" >起始时间</label>
+			<input class="datainp" id="indate_1" type="date" value="" placeholder="选择时间" readonly >
+
+			<label class="lab">结束时间</label>
+			<input class="datainp" id="indate_2" type="text" value="" placeholder="选择时间" readonly >
+
+			<input  type="radio" name="gender" value="female" checked="checked">收入查询
+			<input  type="radio" name="gender" value="male" checked="checked" >支出查询
+			<input class="button" type="submit" name="查询" >
+		</div>
+
+
+
+		<div id="reportForm-table">
+			<table class="table table-striped">
+				<thread>
+					<tr>
+						<th>时间</th>
+						<th>名称</th>
+						<th>金额(元)</th>
+					</tr>
+				</thread>
+
+				<tbody>
+					<tr>
+						<td>2016-1-2</td>
+						<td>工资收入</td>
+						<td>3000</td>
+					</tr>
+				</tbody>
+
+				<tbody>
+					<tr>
+						<td>2016-1-5</td>
+						<td>股票收入</td>
+						<td>5000</td>
+					</tr>
+				</tbody>
+
+				<tbody>
+					<tr>
+						<td colspan="3" align="right">总金额:8000</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div align="center">
+			<input type="submit" value="打印">
+		</div>
+
+		<script type="text/javascript">
+		jeDate({
+			dateCell:"#indate_1",
+			format:"YYYY-MM-DD",
+			isTime:false,
+			minDate:"2016-1-1 00:00:00"
+		})
+		jeDate({
+			dateCell:"#indate_2",
+			format:"YYYY-MM-DD",
+			isTime:false
+		})
+		</script>
+
+</body>
+</html>

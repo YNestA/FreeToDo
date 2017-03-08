@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>FreeToDo</title>
+    <link type="text/css" rel="stylesheet" href="../static/lib/jedate/skin/jedate.css">
     <link type="text/css" rel="stylesheet" href="../static/css/common.css">
     <link type="text/css" rel="stylesheet" href="../static/css/FreeToDo.css">
     <link type="text/css" rel="stylesheet" href="../static/css/menu.css">
@@ -44,42 +45,52 @@
                 <div id="task-app">
                 <div class="task-app-title">
                     <div class="title-left">
-                        <span class="date">2017-03-02</span>
-                        <i class="date-left-btn"></i>
-                        <i class="date-right-btn"></i>
-                        <a  class="today-btn" href="javascript:;">今天</a>
+                        <span class="date">
+                            [[currentDate]]
+                        </span>
+                        <i class="date-left-btn" @click="dateGo('-')"></i>
+                        <i class="date-right-btn" @click="dateGo('+')"></i>
+                        <a class="today-btn" href="javascript:;" @click="setToday">今天</a>
                         <ul>
-                            <li class="current">日</li>
-                            <li>周</li>
-                            <li>月</li>
+                            <li :class="[dateType=='day'?'current':'',]" @click="setDateType('day')">日</li>
+                            <li :class="[dateType=='week'?'current':'',]" @click="setDateType('week')">周</li>
+                            <li :class="[dateType=='month'?'current':'',]" @click="setDateType('month')">月</li>
                         </ul>
                     </div>
                     <div class="title-right">
-                        <select class="right-menu1">
-                            <option>四象限</option>
-                            <option>时间轴</option>
+                        <select v-model="axixing" class="right-menu1">
+                            <option :value="false">四象限</option>
+                            <option :value="true">时间轴</option>
                         </select>
-                        <select class="right-menu2">
-                            <option>全部</option>
-                            <option>已完成</option>
-                            <option>未完成</option>
+                        <select v-model="tasksType" class="right-menu2">
+                            <option value="all">全部</option>
+                            <option value="done">已完成</option>
+                            <option value="notDone">未完成</option>
                         </select><a class="create-task" @click="createTask">+</a>
                     </div>
                 </div>
                 <div v-if="!axixing" id="four-quadrant">
                     <div class="four-top">
-                        <quadrant :level="1" :tasks="tasks1">
+                        <quadrant :level="1"
+                                  :tasks="tasks1"
+                                  @new-task="newTask">
                             <span slot="rankDesc" class="rank-desc">很重要-很紧急</span>
                         </quadrant>
-                        <quadrant :level="2" :tasks="tasks2">
+                        <quadrant :level="2"
+                                  :tasks="tasks2"
+                                  @new-task="newTask">
                             <span slot="rankDesc" class="rank-desc">重要-不紧急</span>
                         </quadrant>
                     </div>
                     <div class="four-bottom">
-                        <quadrant :level="3" :tasks="tasks3">
+                        <quadrant :level="3"
+                                  :tasks="tasks3"
+                                  @new-task="newTask">
                             <span slot="rankDesc" class="rank-desc">不重要-紧急</span>
                         </quadrant>
-                        <quadrant :level="4" :tasks="tasks4">
+                        <quadrant :level="4"
+                                  :tasks="tasks4"
+                                  @new-task="newTask">
                             <span slot="rankDesc" class="rank-desc">不重要-不紧急</span>
                         </quadrant>
                     </div>
@@ -137,9 +148,9 @@
                         <label class="level-btn level-btn-3"><input v-model="level" type="radio" name="level" :value="3"><span></span></label><span v-show="level==3">不重要-紧急</span>
                         <label class="level-btn level-btn-4"><input v-model="level" type="radio" name="level" :value="4"><span></span></label><span v-show="level==4">不重要-不紧急</span>
                     </li>
-                    <li id="task-detail-time"><i></i><input type="text" value="2013-03-07 09:30" readonly><i></i><input type="text" value="2013-03-07 09:30" readonly></li>
-                    <li><i></i><input type="text" placeholder="项目名称"></li>
-                    <li><i></i><input type="text" placeholder="+标签"></li>
+                    <li id="task-detail-time"><i></i><input class="start-time-input" type="text" readonly><i></i><input class="end-time-input" type="text" readonly></li>
+                    <li id="task-detail-project"><i></i><input type="text" placeholder="项目名称"></li>
+                    <li id="task-detail-tags"><i></i><span class="task-detail-tag">啊啊<i></i></span><input type="text" placeholder="+标签" readonly></li>
                 </ul>
             </div>
         </div>
@@ -156,9 +167,9 @@
                 <a class="add" href="javascript:;">+</a>
                 <transition name="add">
                     <div v-show="adding" class="task-create" @click.stop="">
-                        <div class="create-input"><input type="text" placeholder="输入任务，按Enter键完成"><i></i></div>
+                        <div class="create-input"><input v-model="newContent" type="text" placeholder="输入任务，按Enter键完成" @keyup.enter="newTask"><i></i></div>
                         <div class="create-time">
-                            <input type="text" readonly value="2017-03-04 16:30"><i></i><input type="text" value="2017-03-04 16:30" readonly><span class="more-set">...</span>
+                            <input ref="startTime" class="start-time-input" type="text" readonly><i></i><input ref="endTime" class="end-time-input" type="text" readonly><span class="more-set">...</span>
                         </div>
                     </div>
                 </transition>
@@ -166,7 +177,7 @@
             <ul>
                 <li v-for="task in tasks">
                     <label>
-                        <input type="checkbox">
+                        <input v-model="task.done" type="checkbox">
                         <span></span>
                     </label>
                     <span>[[task.content]]</span><time>[[task.startTime]]</time>
@@ -192,8 +203,10 @@
             </ul>
         </div>
     </script>
+
     <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="../static/lib/vue.js"></script>
+    <script type="text/javascript" src="../static/lib/jedate/jquery.jedate.js"></script>
     <script type="text/javascript" src="../static/js/class.js"></script>
     <script type="text/javascript" src="../static/js/main.js"></script>
 </body>
