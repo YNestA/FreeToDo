@@ -16,10 +16,10 @@ Task.prototype={
     constructor:Task,
 }
 
-function Note(id,content,time){
+function Note(id,content,createTime){
     this.id=id;
     this.content=content;
-    this.time=time;
+    this.createTime=createTime;
 }
 
 Note.prototype={
@@ -47,6 +47,15 @@ Tag.prototype={
 }
 
 var timer={
+    week:{
+        0:"星期日",
+        1:"星期一",
+        2:"星期二",
+        3:"星期三",
+        4:"星期四",
+        5:"星期五",
+        6:"星期六",
+    },
     splitTime:function(time){
         var temp=time.split(' ');
         var res=temp[0].split('-').map(function (item) {
@@ -94,5 +103,23 @@ var timer={
             day = day < 10 ? '0' + day : day;
             return [year, month, day].join('-');
         }
+    },
+    getNow:function () {
+        var myDate=new Date(),
+            year=myDate.getFullYear(),
+            month=myDate.getMonth()+1,
+            day=myDate.getDate(),
+            hour=myDate.getHours(),
+            minute=myDate.getMinutes();
+        if(minute<10){
+            minute='0'+minute;
+        }
+
+        return [year,month,day].join('-')+' '+[hour,minute].join(':');
+    },
+    getWeekDay:function (time) {
+        var temp=this.splitTime(time);
+        var myDate=new Date(temp[0],temp[1]-1,temp[2]);
+        return this.week[myDate.getDay()];
     },
 }

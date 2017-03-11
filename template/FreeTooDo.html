@@ -8,6 +8,7 @@
     <link type="text/css" rel="stylesheet" href="../static/css/FreeToDo.css">
     <link type="text/css" rel="stylesheet" href="../static/css/menu.css">
     <link type="text/css" rel="stylesheet" href="../static/css/task.css">
+    <link type="text/css" rel="stylesheet" href="../static/css/note.css">
 </head>
 <body>
     <div id="whole-container">
@@ -42,7 +43,7 @@
         </div>
         <div id="main">
             <div id="apps-warp">
-                <div id="task-app">
+                <div v-show="showThis" id="task-app">
                 <div class="task-app-title">
                     <div class="title-left">
                         <span class="date">
@@ -69,7 +70,7 @@
                         </select><a class="create-task" @click="createTask">+</a>
                     </div>
                 </div>
-                <div v-if="!axixing" id="four-quadrant">
+                <div v-show="!axixing" id="four-quadrant">
                     <div class="four-top">
                         <quadrant :level="1"
                                   :tasks="tasks1"
@@ -95,31 +96,97 @@
                         </quadrant>
                     </div>
                 </div>
-                <div v-else id="time-axix">
+                <div v-show="axixing" id="time-axix">
                     <div id="axix-add">
                         <div :class="['axix-add-icon',axixAdding?'axix-adding-icon':'']" @click="axixAdding=!axixAdding"><i></i></div>
-                        <transition name="axix-add" mode="out-in">
-                            <div v-if="!axixAdding" class="axix-add-btn" key="1">
+                        <transition-group name="axix-add" tag="div">
+                            <div v-show="!axixAdding" class="axix-add-btn" key="1">
                                 <div>新建任务</div>
                             </div>
-                            <div v-else class="axix-add-detail" key="2">
-                                <div class="axix-add-input"><input type="text" placeholder="按Enter完成输入"></div>
+                            <div v-show="axixAdding" class="axix-add-detail" key="2">
+                                <div class="axix-add-input"><input v-model="axixContent" type="text" placeholder="按Enter完成输入" @keyup.enter="axixNewTask"></div>
                                 <div class="axix-add-setting">
-                                    <label class="level-btn level-btn-1"><input type="checkbox"><span></span></label><label class="level-btn level-btn-2"><input type="checkbox"><span></span></label><label class="level-btn level-btn-3"><input type="checkbox"><span></span></label><label class="level-btn level-btn-4"><input type="checkbox"><span></span></label>
-                                    <div class="axix-add-setting-time"><input type="text" value="2016-03-23 16:30" readonly><i></i><input type="text" value="2016-03-23 16:30" readonly></div>
+                                    <label class="level-btn level-btn-1"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="1"><span></span></label>
+                                    <label class="level-btn level-btn-2"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="2"><span></span></label>
+                                    <label class="level-btn level-btn-3"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="3"><span></span></label>
+                                    <label class="level-btn level-btn-4"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="4"><span></span></label>
+                                    <div class="axix-add-setting-time">
+                                        <input class="start-time-input" ref="axixStartTime" type="text" value="2016-03-23 16:30" readonly><i></i><input class="end-time-input" ref="axixEndTime" type="text" value="2016-03-23 16:30" readonly></div>
                                     <div>...</div>
                                 </div>
                             </div>
-                        </transition>
+                        </transition-group>
                     </div>
                     <div id="task-axix">
                         <hr>
-                        <axix-tasks :tasks="tasks" day="2017-02-28 星期二">
+                        <axix-tasks :task="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
+                        <axix-tasks :tasks="value" :day="key" v-for="(value,key) in axixTasks">
                         </axix-tasks>
                     </div>
                 </div>
             </div>
-                <div id="note-app"></div>
+                <div v-show="showThis" id="note-app">
+                    <div id="note-app-title">便签</div>
+                    <div id="notes">
+                        <div id="notes-add">
+                            <a id="add-note-btn" href="javascript:;"
+                                :class="{'adding':adding}"
+                                @click="adding=!adding"
+                            ><img src="../static/img/note/add_note_0.png"></a>
+                            <transition name="note-input">
+                                <div id="note-input" v-show="adding">
+                                    <textarea placeholder="Add a note ~~~" spellcheck="false"
+                                                v-model="newNoteContent"
+                                                ref="noteInput"
+                                                @keyup="dealNoteInput($event)"
+                                    ></textarea>
+                                    <span>按Ctrl+Enter确认/按Enter换行</span>
+                                </div>
+                            </transition>
+                            <span>添加便签</span>
+                        </div>
+                        <ul ref="notes1">
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="1"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes1">
+                                </note>
+                            </transition-group>
+                        </ul>
+                        <ul ref="notes2" >
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="2"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes2">
+                                </note>
+                            </transition-group>
+                        </ul>
+                        <ul ref="notes3" >
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="3"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes3">
+                                </note>
+                            </transition-group>
+                        </ul>
+                        <ul ref="notes4">
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="4"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes4">
+                                </note>
+                            </transition-group>
+                        </ul>
+                    </div>
+                </div>
                 <div id="project-app"></div>
                 <div id="tag-app"></div>
                 <div id="search-app"></div>
@@ -155,6 +222,7 @@
             </div>
         </div>
     </div>
+
     <script type="x-template" id="menu-item-template">
         <li :id="id" :class="{current:current}" @click="choose">
             <i></i>[[cname]]
@@ -193,8 +261,8 @@
             </div>
             <ul>
                 <li v-for="task in tasks">
-                    <time>[[task.startTime.slice(-5)]]</time>
-                    <label :class="['level-done-btn','level-done-btn-'+task.level]"><input type="checkbox"><span></span></label>
+                    <time>[[task.createTime.slice(-5)]]</time>
+                    <label :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label>
                     <div>
                         <div class="axix-task-content">[[task.content]]</div>
                         <div><i></i><time>[[task.endTime]]</time><i></i></div>
@@ -203,11 +271,21 @@
             </ul>
         </div>
     </script>
+    <script type="x-template" id="note-template">
+        <li class="note-li" >
+            <span class="note-delete-btn" title="撕掉便签" @click="deleteNote"></span>
+            <div class="note">
+                <span>[[note.createTime]]</span>
+                <p v-for="ph in phs">[[ph]]</p>
+            </div>
+        </li>
+    </script>
 
     <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="../static/lib/vue.js"></script>
     <script type="text/javascript" src="../static/lib/jedate/jquery.jedate.js"></script>
     <script type="text/javascript" src="../static/js/class.js"></script>
     <script type="text/javascript" src="../static/js/main.js"></script>
+    <script type="text/javascript" src="../static/js/note.js"></script>
 </body>
 </html>

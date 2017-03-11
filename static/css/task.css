@@ -567,6 +567,7 @@ span.task-detail-tag i:hover{
 #axix-add{
     position: relative;
     border-bottom: 1px solid #e5e5e5;
+    overflow: hidden;
 }
 .axix-add-icon{
     cursor: pointer;
@@ -683,6 +684,7 @@ div.axix-add-setting-time input{
     width: 150px;
     padding: 0 10px;
     font-size: 16px;
+    cursor:pointer;
 }
 div.axix-add-setting-time i{
     width: 25px;
@@ -702,9 +704,14 @@ div.axix-add-setting-time+div{
 }
 
 .axix-add-enter-active,.axix-add-leave-active{
-    transition: all 0.1s;
+    transition: all 0.3s;
 }
-
+.axix-add-leave-active{
+    position: absolute !important;
+}
+.axix-add-move{
+    transition: all 0.3s;
+}
 #task-axix{
     position: relative;
     box-sizing: border-box;
@@ -737,10 +744,15 @@ div.axix-add-setting-time+div{
 }
 .axix-tasks-title time{
     margin-left: 100px;
+    padding-left: 5px;
     height: 40px;
     line-height: 40px;
     font-size: 15px;
     color: #999;
+}
+
+.axix-tasks{
+    margin-bottom: 20px;
 }
 
 .axix-tasks ul{

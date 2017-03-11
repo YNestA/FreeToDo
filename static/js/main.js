@@ -1,14 +1,13 @@
+ var bus=new Vue();
+ bus.$on("createTask",function () {
+     $("#task-detail").animate({width: "400px"}, 200, "linear");
+     $("#apps-warp").animate({marginRight: "400px"}, 200, "linear");
+ });
+ bus.$on("closeTaskDetail",function () {
+     $("#task-detail").animate({width:"0px"},200,"linear");
+     $("#apps-warp").animate({marginRight:"0px"},200,"linear");
+ });
 $(document).ready(function () {
-    var bus=new Vue();
-    bus.$on("createTask",function () {
-        $("#task-detail").animate({width:"400px"},200,"linear");
-        $("#apps-warp").animate({marginRight:"400px"},200,"linear");
-    });
-    bus.$on("closeTaskDetail",function () {
-        $("#task-detail").animate({width:"0px"},200,"linear");
-        $("#apps-warp").animate({marginRight:"0px"},200,"linear");
-    })
-
     var menuItems=[
         {name:'task',cname:'任务',current:true,},
         {name:'note',cname:'便签',current:false,},
@@ -118,6 +117,7 @@ $(document).ready(function () {
             "axix-tasks":axixTasks,
         },
         data:{
+            showThis:false,
             tasks:[new Task({
                 id:'0',
                 content:'啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊',
@@ -133,6 +133,8 @@ $(document).ready(function () {
             dateType:'day',
             dateSection:["",timer.getTime()],
             tasksType:"all",
+            axixContent:"",
+            axixLevel:1,
         },
         methods:{
             _comTasks:function (level) {
@@ -148,6 +150,9 @@ $(document).ready(function () {
                         return res;
                     });
                 };
+            },
+            _isEmptyObject:function (obj) {
+                return $.isEmptyObject(obj);
             },
             _inDateSection:function (createTime) {
                 var dateType=this.dateType,
@@ -209,9 +214,23 @@ $(document).ready(function () {
                     dateSection.splice(1,1,timer.getTime(dateSection[1],dire,7));
                 }
             },
+            axixNewTask:function () {
+                var taskInfo={
+                    id:'12',
+                    content:this.axixContent,
+                    level:this.axixLevel,
+                    createTime:timer.getNow(),
+                    startTime:this.$refs.axixStartTime.value,
+                    endTime:this.$refs.axixEndTime.value,
+                    done:false,
+                };
+                var task=new Task(taskInfo);
+                this.tasks.push(task);
+                this.axixContent="";
+            },
             newTask:function (taskInfo) {
                 taskInfo.id='1';
-                taskInfo.createTime=timer.getTime();
+                taskInfo.createTime=timer.getNow();
                 taskInfo.done=false;
                 var task=new Task(taskInfo);
                 this.tasks.push(task);
@@ -239,6 +258,24 @@ $(document).ready(function () {
             tasks4:function(){
                 return this._comTasks(4)();
             },
+            axixTasks:function () {
+                var that=this;
+                var tasks=this.tasks.filter(function (item) {
+                    return that._inDateSection(item.createTime)&&(that.tasksType==='all'||item.done==={'done':true,'notDone':false}[that.tasksType]);
+                }).sort(function (task1,task2) {
+                    return timer.compareTime(task1.createTime,task2.createTime);
+                });
+                var res={};
+                tasks.forEach(function (item) {
+                    var day=item.createTime.slice(0,10)+' '+timer.getWeekDay(item.createTime);
+                    if(res[day]){
+                        res[day].push(item);
+                    }else{
+                        res[day]=[item];
+                    }
+                });
+                return res;
+            },
         },
     });
 
@@ -265,5 +302,4 @@ $(document).ready(function () {
             initAddVal:[6,"hh"],
         });
     },1000);
-
 });
