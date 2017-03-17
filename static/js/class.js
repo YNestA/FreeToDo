@@ -26,20 +26,23 @@ Note.prototype={
     constructor:Note,
 }
 
-function Project(id,name,tasks,isFile) {
-    this.id=id;
-    this.name=name;
-    this.tasks=tasks;
-    this.isFile=isFile;
+function Project(projectInfo) {
+    this.id=projectInfo.id;
+    this.name=projectInfo.name;
+    this.content=projectInfo.content;
+    this.tasks=projectInfo.tasks;
+    this.isFile=projectInfo.isFile;
+    this.createTime=projectInfo.createTime;
 }
 Project.prototype={
     constructor:Project,
 }
 
-function Tag(id,name,tasks) {
+function Tag(id,name,tasks,createTime) {
     this.id=id;
     this.name=name;
     this.tasks=tasks;
+    this.createTime=createTime;
 }
 
 Tag.prototype={
@@ -123,3 +126,4 @@ var timer={
         return this.week[myDate.getDay()];
     },
 }
+

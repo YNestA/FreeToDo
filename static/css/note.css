@@ -1,6 +1,7 @@
 #note-app{
     position: relative;
     height: 100%;
+    overflow: auto;
 }
 #note-app-title{
     position: absolute;
@@ -19,9 +20,14 @@
     position: relative;
     height: 100%;
     padding-top: 175px;
-    overflow: auto;
     box-sizing: border-box;
     position: relative;
+    overflow: hidden;
+}
+#notes >div:last-child{
+    position: relative;
+    height: 100%;
+    padding-top: 20px;
 }
 #notes-add{
     position: absolute;
@@ -129,7 +135,6 @@
     padding: 0;
     width: 20%;
     list-style-type: none;
-    overflow: hidden;
 }
 li.note-li{
     position: relative;

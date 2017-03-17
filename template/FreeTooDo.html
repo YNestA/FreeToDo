@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <title>FreeToDo</title>
     <link type="text/css" rel="stylesheet" href="../static/lib/jedate/skin/jedate.css">
+    <link type="text/css" rel="stylesheet" href="../static/lib/perfect-scrollbar.min.css">
     <link type="text/css" rel="stylesheet" href="../static/css/common.css">
     <link type="text/css" rel="stylesheet" href="../static/css/FreeToDo.css">
     <link type="text/css" rel="stylesheet" href="../static/css/menu.css">
     <link type="text/css" rel="stylesheet" href="../static/css/task.css">
     <link type="text/css" rel="stylesheet" href="../static/css/note.css">
+    <link type="text/css" rel="stylesheet" href="../static/css/tag.css">
+    <link type="text/css" rel="stylesheet" href="../static/css/project.css">
 </head>
 <body>
     <div id="whole-container">
@@ -31,7 +34,7 @@
             </nav>
             <div id="bottom-menu">
                 <ul>
-                    <li id="menu-search" :class="{current:searching}" @click="search"><i></i></li>
+                    <li id="menu-search" :class="{current:searching}" @click="search" v-if="showSearchBtn"><i></i></li>
                     <li id="menu-system" @click="system">...</li>
                     <ul v-show="systeming" id="system">
                             <li>帐号设置</li>
@@ -118,8 +121,8 @@
                         </transition-group>
                     </div>
                     <div id="task-axix">
-                        <hr>
-                        <axix-tasks :task="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
+                        <hr class="axix-hr">
+                        <axix-tasks :tasks="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
                         <axix-tasks :tasks="value" :day="key" v-for="(value,key) in axixTasks">
                         </axix-tasks>
                     </div>
@@ -145,6 +148,7 @@
                             </transition>
                             <span>添加便签</span>
                         </div>
+                        <div>
                         <ul ref="notes1">
                             <transition-group name="note">
                                 <note :note="note"
@@ -185,10 +189,85 @@
                                 </note>
                             </transition-group>
                         </ul>
+                        </div>
                     </div>
                 </div>
-                <div id="project-app"></div>
-                <div id="tag-app"></div>
+                <div v-show="showThis" id="project-app">
+                    <div id="projects">
+                        <div id="projects-title">
+                            <a id="nf-project-btn" :class={'current':!showFile} href="javascript:;" @click="showFile=false">活动项目</a>
+                            <a id="f-project-btn" :class="{'current':showFile}" href="javascript:;" @click="showFile=true">归档项目</a>
+                            <a id="create-project-btn" href="javascript:;" @click="managerAdd">+</a>
+                        </div>
+                        <div id="projects-container">
+                            <div v-show="showFile">
+                                <transition-group name="project" tag="ul">
+                                    <project
+                                            :project="project"
+                                            :key="project"
+                                            @click.native="lookProjectTasks(project)"
+                                            @modify-req="modifyReq"
+                                            @delete-project="deleteProject"
+                                            v-for="project in fProjects">
+                                    </project>
+                                </transition-group>
+                            </div>
+                            <div v-show="!showFile">
+                                <transition-group name="project" tag="ul">
+                                    <project
+                                            :project="project"
+                                            :key="project"
+                                            @click.native="lookProjectTasks(project)"
+                                            @modify-req="modifyReq"
+                                            @delete-project="deleteProject"
+                                            v-for="project in nfProjects">
+                                    </project>
+                                </transition-group>
+                            </div>
+                        </div>
+                    </div>
+                    <project-tasks :project="currentProject">
+                    </project-tasks>
+                    <project-manager v-show="showManager"
+                                     :type="managerType"
+                                     :id="managerId"
+                                     :name="managerName"
+                                     :content="managerContent"
+                                     @close-manager="showManager=false"
+                                     @new-project="newProject"
+                                     @modify-project="modifyProject"
+                    ></project-manager>
+                </div>
+                <div v-show="showThis" id="tag-app">
+                    <div id="tags">
+                        <div id="tags-title">标签<a id="create-tag-btn" href="javascript:;" @click="tagAdding=true">+</a></div>
+                        <div id="tags-container">
+                            <div>
+                            <transition-group name="tags" tag="ul">
+                                <tag :tag="tag"
+                                     :key="tag"
+                                     @delete-tag="deleteTag"
+                                     @click.native="lookTagTasks(tag)"
+                                     v-for="tag in tags"></tag>
+                            </transition-group>
+                            </div>
+                        </div>
+                    </div>
+                    <tag-tasks
+                        :tag="currentTag">
+                    </tag-tasks>
+                    <div id="tag-adder" v-show="tagAdding">
+                        <div>
+                            <div class="tag-adder-title">新建标签</div>
+                            <div class="tag-adder-input">
+                                <span>标签名称</span>
+                                <input v-model="newTagName" placeholder="请输入标签名称">
+                            </div>
+                            <div class="tag-adder-btn"><a @click="newTag" href="javascript:;">创建</a></div>
+                            <i @click="tagAdding=false"></i>
+                        </div>
+                    </div>
+                </div>
                 <div id="search-app"></div>
             </div>
             <div id="task-detail">
@@ -243,8 +322,8 @@
                 </transition>
             </div>
             <ul>
-                <li v-for="task in tasks">
-                    <label>
+                <li @click="chooseTask(task)" v-for="task in tasks">
+                    <label @click.stop="">
                         <input v-model="task.done" type="checkbox">
                         <span></span>
                     </label>
@@ -263,7 +342,7 @@
                 <li v-for="task in tasks">
                     <time>[[task.createTime.slice(-5)]]</time>
                     <label :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label>
-                    <div>
+                    <div @click="chooseTask">
                         <div class="axix-task-content">[[task.content]]</div>
                         <div><i></i><time>[[task.endTime]]</time><i></i></div>
                     </div>
@@ -280,12 +359,107 @@
             </div>
         </li>
     </script>
+    <script type="x-template" id="tag-template">
+        <li>
+            <div><i></i><span>[[tag.name]]</span></div>
+            <div class="tag-tasks-count">任务数([[tag.tasks.length]])</div>
+            <a href="javascript:;" @click.stop="deleteTag"></a>
+        </li>
+    </script>
+    <script type="x-template" id="tag-tasks-template">
+        <div id="tag-tasks">
+            <div id="tag-tasks-title">标签"[[tag.name]]"的任务
+                <a id="create-tag-task-btn" href="javascript:;">+</a>
+                <select v-model="tasksType">
+                    <option value="all">全部</option>
+                    <option value="done">已完成</option>
+                    <option value="notDone">未完成</option>
+                </select>
+            </div>
+            <div id="tag-tasks-container">
+                <div>
+                    <hr class="axix-hr">
+                    <axix-tasks :tasks="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
+                    <axix-tasks :tasks="value" :day="key" v-for="(value,key) in axixTasks"></axix-tasks>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="x-template" id="project-template">
+        <li>
+            <div class="project-ear"></div>
+            <div class="project-name">[[project.name]]</div>
+            <div class="project-info">
+                <span>[[project.tasks.length]]<br>总任务</span>
+                <span>[[doneTasks.length]]<br>已完成</span>
+                <span>[[progress]]<br>进度</span>
+            </div>
+            <div class="project-op" :style="[showMenu?{display:'block'}:{}]" @click.stop="openMenu">
+                <i></i>
+            </div>
+            <div v-show="showMenu" class="project-op-menu" >
+                    <template v-if="!project.isFile">
+                        <div @click.stop="modifyReq">编辑</div>
+                        <div @click.stop="fileProject">归档</div>
+                    </template>
+                    <template v-else>
+                        <div @click.stop="nfileProject">取消归档</div>
+                    </template>
+                    <div @click.stop="deleteProject">删除</div>
+            </div>
+        </li>
+    </script>
+    <script type="x-template" id="project-tasks-template">
+        <div id="project-tasks">
+            <div id="project-tasks-title">项目"[[project.name]]"的任务
+                <a id="create-project-task-btn" href="javascript:;">+</a>
+                <select v-model="tasksType">
+                    <option value="all">全部</option>
+                    <option value="done">已完成</option>
+                    <option value="notDone">未完成</option>
+                </select>
+            </div>
+            <div id="project-tasks-container">
+                <div>
+                    <hr class="axix-hr">
+                    <axix-tasks :tasks="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
+                    <axix-tasks :tasks="value" :day="key" v-for="(value,key) in axixTasks"></axix-tasks>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="x-template" id="project-manager-template">
+        <div id="project-manager">
+            <div>
+                <div id="project-manager-title">
+                    <template v-if="type=='add'">新建项目</template>
+                    <template v-else>修改项目</template></div>
+                <div id="project-manager-name">
+                    <span>项目名称</span>
+                    <input v-model="newName" placeholder="请输入项目名称">
+                </div>
+                <div id="project-manager-content">
+                    <span>项目简介</span>
+                    <textarea v-model="newContent"></textarea>
+                </div>
+                <div id="project-manager-btn">
+                    <a @click="newProject" href="javascript:;" v-if="type=='add'">创建</a>
+                    <a @click="modifyProject" href="javascript:;" v-else>修改</a>
+                </div>
+                <i @click="closeManager"></i>
+            </div>
+        </div>
+    </script>
 
     <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="../static/lib/vue.js"></script>
     <script type="text/javascript" src="../static/lib/jedate/jquery.jedate.js"></script>
+    <script type="text/javascript" src="../static/lib/perfect-scrollbar.jquery.min.js"></script>
+    <script type="text/javascript" src="../static/js/common.js"></script>
     <script type="text/javascript" src="../static/js/class.js"></script>
-    <script type="text/javascript" src="../static/js/main.js"></script>
     <script type="text/javascript" src="../static/js/note.js"></script>
+    <script type="text/javascript" src="../static/js/tag.js"></script>
+    <script type="text/javascript" src="../static/js/project.js"></script>
+    <script type="text/javascript" src="../static/js/main.js"></script>
 </body>
 </html>
