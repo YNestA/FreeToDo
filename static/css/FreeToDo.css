@@ -12,4 +12,100 @@
     margin-left: 90px;
     height: 100%;
 }
+#message{
+    position: fixed;
+    display: inline-block;
+    margin: 0 auto;
+    box-sizing: border-box;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    height: 35px;
+    line-height: 25px;
+    width: 200px;
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+    border: 1px solid #faebcc;
+    display: none;
+    z-index: 1000;
+}
+
+#confirm{
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255,255,255,0.6);
+}
+#confirm >div{
+    position: relative;
+    width: 400px;
+    height: 125px;
+    margin: 20px auto;
+    border: 1px solid #e5e5e5;
+    left: 0;
+    right: 0;
+    background-color: #f5f5f5;
+    box-shadow: 0 0 12px 4px rgba(0,0,0,0.18);
+}
+#confirm-title{
+    height: 40px;
+    line-height: 40px;
+    font-size: 15px;
+    padding: 0 20px;
+}
+#confirm-content{
+    height: 35px;
+    height: 35px;
+    padding: 0 20px;
+    font-size: 15px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#confirm-btn{
+    height: 50px;
+    padding: 0 10px;
+    background-color: #fff;
+}
+#confirm-btn a{
+    float: right;
+    margin: 12px 10px 0;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 3px 20px;
+    display: inline-block;
+    border-radius: 2px;
+}
+#confirm-btn a:last-child{
+    color: #333;
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+
+#confirm-btn a:first-child{
+    color: #fff;
+    border: 1px solid #d43f3a;
+    background-color: #d9534f;
+}
+#confirm-btn a:first-child:hover{
+    background-color: #d43f3a;
+}
+#confirm i{
+    display: block;
+    top: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    background-image: url(../img/icon.png);
+    background-position: 0 -748px;
+    cursor: pointer;
+}
+#confirm i:hover{
+    background-position: -32px -748px;
+}
+
 

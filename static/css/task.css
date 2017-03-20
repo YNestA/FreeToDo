@@ -421,19 +421,19 @@ div.create-time span.more-set{
     color: #e0622c;
 }
 
-#task-detail ul{
+#task-detail >ul{
     margin: 0;
     padding: 0;
     list-style-type: none;
 }
 
-#task-detail ul li{
+#task-detail >ul >li{
     height: 40px;
     line-height: 40px;
     padding: 0 10px;
     border-bottom:1px solid #e5e5e5;
 }
-#task-detail ul li>*{
+#task-detail >ul li>*{
     display: inline-block;
     vertical-align: middle;
 }
@@ -489,13 +489,37 @@ div.create-time span.more-set{
     cursor: pointer;
 }
 
-#task-detail-project i{
+#task-detail-project{
+    position: relative;
+}
+
+#task-detail-project >i:first-child{
     width: 32px;
     height: 32px;
     background: url(../img/icon.png) 0 -425px;
 }
-#task-detail-project:hover i{
+#task-detail-project:hover >i:first-child{
     background: url(../img/icon.png) -32px -425px;
+}
+#task-detail-project:hover >i:last-child{
+    display: block;
+}
+#task-detail-project >i:last-child{
+    position: absolute;
+    cursor: pointer;
+    right: 0;
+    top: 4px;
+    display: none;
+    width: 32px;
+    height: 32px;
+    background-image: url(../img/icon.png) ;
+    background-position: 0px -748px;
+}
+#task-detail-project >i:last-child.show{
+    display: none;
+}
+#task-detail-project >i:last-child:hover{
+    background-position: -32px -748px;
 }
 #task-detail-project input{
     width: 125px;
@@ -504,6 +528,7 @@ div.create-time span.more-set{
     cursor: pointer;
 }
 #task-detail-tags{
+    position: relative;
     height: auto !important;
     min-height: 40px;
 }
@@ -861,4 +886,45 @@ label.level-done-btn-4 input:checked+span{
     width: 24px;
     margin-left: 10px;
     background: url(../img/icon.png) -4px -267px;
+}
+
+#task-detail-project-list,#task-detail-tags-list{
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    top: 40px;
+    left: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 15px #c4c4c4;
+    z-index: 200;
+    max-height: 200px;
+}
+#task-detail-project-list li,#task-detail-tags-list li{
+    box-sizing: border-box;
+    padding: 0 10px;
+    width: 200px;
+    height: 40px;
+    border-bottom: 1px solid #e5e5e5;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+#task-detail-project-list li:hover,#task-detail-tags-list li:hover{
+    background-color: #f5f5f5;
+}
+#task-detail-project-list li.current,#task-detail-tags-list li:hover{
+    color: #2bbff3;
+}
+#task-detail-project-list li.current i,#task-detail-tags-list li:hover i{
+    background-position: -35px -711px;
+}
+#task-detail-project-list li i,#task-detail-tags-list li i{
+    display: inline-block;
+    margin-right: 5px;
+    width: 25px;
+    height: 40px;
+    background-image: url(../img/icon.png);
+    background-position: -3px -711px;
 }

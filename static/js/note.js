@@ -12,7 +12,7 @@ var noteComponent={
     },
     methods:{
         deleteNote:function () {
-            this.$emit("delete-note",this.note.id,this.ul);
+            this.$emit("delete-note",this.note,this.ul);
         },
     },
 };
@@ -43,7 +43,7 @@ var noteAppVue={
     data:{
         adding:false,
         showThis:false,
-        notesAll:[new Note('0','sadsadsadsadsadd',timer.getNow()),new Note('0','sadsadsadsadsadd',timer.getNow()),new Note('0','sadsadsadsadsadd',timer.getNow()),new Note('0','sadsadsadsadsadd',timer.getNow())],
+        notesAll:[],
         notes1:[],
         notes2:[],
         notes3:[],
@@ -72,20 +72,24 @@ var noteAppVue={
                 }
             }
         },
-        deleteNote:function (noteId,ul) {
-            for(var i=0;i<this.notesAll.length;i++){
-                if(this.notesAll[i].id==noteId){
-                    this.notesAll.splice(i,1);
-                    break;
+        deleteNote:function (note,ulNum) {
+            var that=this;
+            confirmVM.confirm("删除便签","删除便签'"+note.content+"'",function () {
+                for(var i=0;i<that.notesAll.length;i++){
+                   if(that.notesAll[i].id==note.id){
+                        that.notesAll.splice(i,1);
+                        break;
+                    }
                 }
-            }
-            var ul=this['notes'+ul];
-            for( var i=0;i<ul.length;i++){
-                if(ul[i].id==noteId){
-                    ul.splice(i,1);
-                    break;
+                var ul=that['notes'+ulNum];
+                for( var i=0;i<ul.length;i++){
+                    if(ul[i].id==note.id){
+                        ul.splice(i,1);
+                        break;
+                    }
                 }
-            }
+                showMessage("删除成功");
+            });
         }
     },
 };

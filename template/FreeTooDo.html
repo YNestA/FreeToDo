@@ -15,6 +15,18 @@
 </head>
 <body>
     <div id="whole-container">
+        <div id="message"></div>
+        <div v-show="showThis" id="confirm">
+            <div>
+                <div id="confirm-title">[[title]]</div>
+                <div id="confirm-content">[[content]]</div>
+                <div id="confirm-btn">
+                    <a href="javascript:;" @click="yes">确认</a>
+                    <a href="javascript:;" @click="no">取消</a>
+                </div>
+                <i @click="showThis=false"></i>
+            </div>
+        </div>
         <div id="whole-menu">
             <div id="user-head">
                 <img src="../static/img/menu/user_head.png">
@@ -47,7 +59,7 @@
         <div id="main">
             <div id="apps-warp">
                 <div v-show="showThis" id="task-app">
-                <div class="task-app-title">
+                    <div class="task-app-title">
                     <div class="title-left">
                         <span class="date">
                             [[currentDate]]
@@ -73,7 +85,7 @@
                         </select><a class="create-task" @click="createTask">+</a>
                     </div>
                 </div>
-                <div v-show="!axixing" id="four-quadrant">
+                    <div v-show="!axixing" id="four-quadrant">
                     <div class="four-top">
                         <quadrant :level="1"
                                   :tasks="tasks1"
@@ -99,7 +111,7 @@
                         </quadrant>
                     </div>
                 </div>
-                <div v-show="axixing" id="time-axix">
+                    <div v-show="axixing" id="time-axix">
                     <div id="axix-add">
                         <div :class="['axix-add-icon',axixAdding?'axix-adding-icon':'']" @click="axixAdding=!axixAdding"><i></i></div>
                         <transition-group name="axix-add" tag="div">
@@ -114,7 +126,7 @@
                                     <label class="level-btn level-btn-3"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="3"><span></span></label>
                                     <label class="level-btn level-btn-4"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="4"><span></span></label>
                                     <div class="axix-add-setting-time">
-                                        <input class="start-time-input" ref="axixStartTime" type="text" value="2016-03-23 16:30" readonly><i></i><input class="end-time-input" ref="axixEndTime" type="text" value="2016-03-23 16:30" readonly></div>
+                                        <input class="add-start-time-input" ref="axixStartTime" type="text" placeholder="选择开始日期" readonly><i></i><input class="add-end-time-input" ref="axixEndTime" type="text" placeholder="选择结束日期" readonly></div>
                                     <div>...</div>
                                 </div>
                             </div>
@@ -127,7 +139,7 @@
                         </axix-tasks>
                     </div>
                 </div>
-            </div>
+                </div>
                 <div v-show="showThis" id="note-app">
                     <div id="note-app-title">便签</div>
                     <div id="notes">
@@ -278,25 +290,44 @@
                     <div class="action">
                         <template v-if="newing">
                             <a href="javascript:;" @click="close">取消</a>
-                            <a href="javascript:;">保存</a>
+                            <a href="javascript:;" @click="newTask">保存</a>
                         </template>
                         <template v-else>
-                            <a class="delete" href="javascript:;">删除</a>
+                            <a class="delete" href="javascript:;" @click="deleteTask">删除</a>
                             <a href="javascript:;" @click="close">关闭</a>
                         </template>
                     </div>
                 </div>
                 <ul>
-                    <li id="task-detail-content" :class="'task-detail-content-'+level"><label v-if="newing" :class="['level-done-btn','level-done-btn-'+level]"><input type="checkbox"><span></span></label><input type="text" placeholder="输入任务内容"></li>
+                    <li id="task-detail-content" :class="'task-detail-content-'+task.level"><label v-if="!newing" :class="['level-done-btn','level-done-btn-'+level]"><input v-model="done" type="checkbox"><span></span></label><input v-model="content" type="text" placeholder="输入任务内容"></li>
                     <li id="task-detail-level">
-                        <label class="level-btn level-btn-1"><input v-model="level" type="radio" name="level" :value="1"><span></span></label><span v-show="level==1">很重要-很紧急</span>
-                        <label class="level-btn level-btn-2"><input v-model="level" type="radio" name="level" :value="2"><span></span></label><span v-show="level==2">重要-不紧急</span>
-                        <label class="level-btn level-btn-3"><input v-model="level" type="radio" name="level" :value="3"><span></span></label><span v-show="level==3">不重要-紧急</span>
-                        <label class="level-btn level-btn-4"><input v-model="level" type="radio" name="level" :value="4"><span></span></label><span v-show="level==4">不重要-不紧急</span>
+                        <label class="level-btn level-btn-1"><input v-model="level" type="radio" name="level" :value="1"><span></span></label><span v-show="task==1">很重要-很紧急</span>
+                        <label class="level-btn level-btn-2"><input v-model="level" type="radio" name="level" :value="2"><span></span></label><span v-show="task==2">重要-不紧急</span>
+                        <label class="level-btn level-btn-3"><input v-model="level" type="radio" name="level" :value="3"><span></span></label><span v-show="task==3">不重要-紧急</span>
+                        <label class="level-btn level-btn-4"><input v-model="level" type="radio" name="level" :value="4"><span></span></label><span v-show="task==4">不重要-不紧急</span>
                     </li>
-                    <li id="task-detail-time"><i></i><input class="start-time-input" type="text" readonly><i></i><input class="end-time-input" type="text" readonly></li>
-                    <li id="task-detail-project"><i></i><input type="text" placeholder="项目名称"></li>
-                    <li id="task-detail-tags"><i></i><span class="task-detail-tag">啊啊<i></i></span><input type="text" placeholder="+标签" readonly></li>
+                    <li id="task-detail-time"><i></i><input :value="startTime" id="task-detail-start-time-input" class="start-time-input" type="text" placeholder="选择开始日期"><i></i><input :value="endTime" class="end-time-input" id="task-detail-end-time-input" type="text" placeholder="选择结束日期"></li>
+                    <li id="task-detail-project"><i></i><input @click.stop="showProjects" v-model="project.name" type="text" placeholder="项目名称">
+                        <ul v-show="showProjectList" id="task-detail-project-list">
+                            <li :class="[project.id==task.project.id?'current':'']"
+                                @click="chooseProject(project)"
+                                v-for="project in projectList">
+                                <i></i>[[project.name]]
+                            </li>
+                        </ul>
+                        <i :class="[task.project.id?'':'show']" @click="cancelProject"></i>
+                    </li>
+                    <li id="task-detail-tags"><i></i>
+                        <span class="task-detail-tag" v-for="tag in tags">[[tag.name]]<i @click="cancelTag(tag)"></i></span>
+                        <input type="text" placeholder="+标签" readonly @click.stop="showTags" >
+                        <ul v-show="showTagsList" id="task-detail-tags-list">
+                            <li
+                                @click="chooseTag(tag)"
+                                v-for="tag in tagList">
+                                <i></i>[[tag.name]]
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -316,7 +347,7 @@
                     <div v-show="adding" class="task-create" @click.stop="">
                         <div class="create-input"><input v-model="newContent" type="text" placeholder="输入任务，按Enter键完成" @keyup.enter="newTask"><i></i></div>
                         <div class="create-time">
-                            <input ref="startTime" class="start-time-input" type="text" readonly><i></i><input ref="endTime" class="end-time-input" type="text" readonly><span class="more-set">...</span>
+                            <input ref="startTime" class="add-start-time-input" type="text" readonly><i></i><input ref="endTime" class="add-end-time-input" type="text" readonly><span class="more-set">...</span>
                         </div>
                     </div>
                 </transition>
@@ -342,9 +373,9 @@
                 <li v-for="task in tasks">
                     <time>[[task.createTime.slice(-5)]]</time>
                     <label :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label>
-                    <div @click="chooseTask">
+                    <div @click="chooseTask(task)">
                         <div class="axix-task-content">[[task.content]]</div>
-                        <div><i></i><time>[[task.endTime]]</time><i></i></div>
+                        <div><i></i><time>[[task.startTime]]</time><i></i></div>
                     </div>
                 </li>
             </ul>
@@ -369,7 +400,7 @@
     <script type="x-template" id="tag-tasks-template">
         <div id="tag-tasks">
             <div id="tag-tasks-title">标签"[[tag.name]]"的任务
-                <a id="create-tag-task-btn" href="javascript:;">+</a>
+                <a id="create-tag-task-btn" href="javascript:;" @click="createTask">+</a>
                 <select v-model="tasksType">
                     <option value="all">全部</option>
                     <option value="done">已完成</option>
@@ -412,7 +443,7 @@
     <script type="x-template" id="project-tasks-template">
         <div id="project-tasks">
             <div id="project-tasks-title">项目"[[project.name]]"的任务
-                <a id="create-project-task-btn" href="javascript:;">+</a>
+                <a id="create-project-task-btn" href="javascript:;" @click="createTask">+</a>
                 <select v-model="tasksType">
                     <option value="all">全部</option>
                     <option value="done">已完成</option>
@@ -451,15 +482,88 @@
         </div>
     </script>
 
+    <script type="text/javascript">
+        var originData={
+            tasks:[{
+                id:'task0',
+                content:'啊啊啊',
+                level:1,
+                createTime:"2017-03-20 19:00",
+                startTime:"2017-03-20 19:00",
+                endTime:"2017-03-21 20:00",
+                project:"pro0",
+                tags:["tag0",],
+                done:false
+            }],
+            notes:[{
+                id:'note0',
+                content:"啊啊啊啊",
+                createTime:"2017-04-20 18:00",
+            },],
+            projects:[
+                {
+                    id:'pro0',
+                    name:'啊啊啊啊',
+                    content:"啊啊啊啊啊啊啊啊啊啊",
+                    tasks:["task0"],
+                    isFile:false,
+                    createTime:'2017-05-01 15:30',
+                },
+                {
+                    id:'pro1',
+                    name:'啊啊',
+                    content:"啊啊啊啊啊啊啊啊啊啊",
+                    tasks:[],
+                    isFile:false,
+                    createTime:'2017-05-01 15:30',
+                },
+                {
+                    id:'pro2',
+                    name:'啊啊',
+                    content:"啊啊啊啊啊啊啊啊啊啊",
+                    tasks:[],
+                    isFile:false,
+                    createTime:'2017-05-01 15:30',
+                },
+            ],
+            tags:[
+                {
+                    id:"tag0",
+                    name:"啊",
+                    tasks:["task0"],
+                    createTime:"2017-04-20 18:00",
+                },
+                {
+                    id:"tag1",
+                    name:"啊啊",
+                    tasks:[],
+                    createTime:"2017-04-20 18:00",
+                },
+                {
+                    id:"tag2",
+                    name:"啊啊啊",
+                    tasks:[],
+                    createTime:"2017-04-20 18:00",
+                },
+                {
+                    id:"tag3",
+                    name:"啊啊啊",
+                    tasks:[],
+                    createTime:"2017-04-20 18:00",
+                },
+            ],
+        };
+    </script>
     <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="../static/lib/vue.js"></script>
     <script type="text/javascript" src="../static/lib/jedate/jquery.jedate.js"></script>
     <script type="text/javascript" src="../static/lib/perfect-scrollbar.jquery.min.js"></script>
-    <script type="text/javascript" src="../static/js/common.js"></script>
     <script type="text/javascript" src="../static/js/class.js"></script>
+    <script type="text/javascript" src="../static/js/common.js"></script>
+    <script type="text/javascript" src="../static/js/task.js"></script>
     <script type="text/javascript" src="../static/js/note.js"></script>
-    <script type="text/javascript" src="../static/js/tag.js"></script>
     <script type="text/javascript" src="../static/js/project.js"></script>
+    <script type="text/javascript" src="../static/js/tag.js"></script>
     <script type="text/javascript" src="../static/js/main.js"></script>
 </body>
 </html>

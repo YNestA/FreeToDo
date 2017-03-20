@@ -14,6 +14,9 @@ var projectTasksComponent={
         };
     },
     methods:{
+        createTask:function (){
+            bus.$emit("create-task");
+        },
         _isEmptyObject:function (obj) {
             return $.isEmptyObject(obj);
         },
@@ -79,7 +82,9 @@ var projectComponent={
             });
         },
         progress:function () {
-            return (this.doneTasks.length/this.project.tasks.length).toFixed(2)*100+'%';
+            var doneLength=this.doneTasks.length,
+                wholeLength=this.project.tasks.length;
+            return (wholeLength==0)?"0%":(doneLength/wholeLength).toFixed(2)*100+'%';
         },
     },
 };
@@ -125,6 +130,7 @@ var projectManagerComponent={
         },
     }
 };
+/*
 var tasks=[new Task({
                 id:'0',
                 content:'啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊',
@@ -132,7 +138,7 @@ var tasks=[new Task({
                 createTime:"2017-03-02 00:00",
                 startTime:"2017-03-01 00:00",
                 endTime:"2017-03-01 00:00",
-                project:null,
+                project:new Project(nullProject),
                 tags:[],
                 done:false,
             }),new Task({
@@ -142,17 +148,18 @@ var tasks=[new Task({
                 createTime:"2017-03-02 00:00",
                 startTime:"2017-03-01 00:00",
                 endTime:"2017-03-01 00:00",
-                project:null,
+                project:new Project(nullProject),
                 tags:[],
                 done:true,
             })];
-var projects=[new Project({id:'0',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'1',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'2',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'3',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'4',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'5',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''})];
+var projects=[new Project({id:'pro0',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:[],isFile:false,createTime:''}),
+    new Project({id:'pro1',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
+    new Project({id:'pro2',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
+    new Project({id:'pro3',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
+    new Project({id:'pro4',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
+    new Project({id:'pro5',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''})];
 
+*/
 var projectAppVue={
     el:"#project-app",
     delimiters:['[[',']]'],
@@ -162,11 +169,11 @@ var projectAppVue={
         "project-manager":projectManagerComponent,
     },
     data:{
-        showThis:true,
+        showThis:false,
         showFile:false,
         showManager:false,
-        projects:projects,
-        currentProject:new Project({id:'0',name:'',content:"",tasks:[],isFile:false,createTime:''}),
+        projects:[],
+        currentProject:new Project(nullProject),
         managerType:'add',
         managerId:"",
         managerName:"",
@@ -199,12 +206,22 @@ var projectAppVue={
             this.managerContent=project.content;
         },
         deleteProject:function (project) {
-            var projects=this.projects;
-            for(var i=0;i<projects.length;i++){
-                if(project.id==projects[i].id){
-                    projects.splice(i,1);
+            var del=function (projects,projectId) {
+                for(var i=0;i<projects.length;i++){
+                    if(projects[i].id==projectId){
+                        projects.splice(i,1);
+                        break;
+                    }
                 }
             };
+            var that=this;
+            confirmVM.confirm("删除项目","删除项目'"+project.name+"'",function () {
+                del(that.projects,project.id);
+                project.tasks.forEach(function (item) {
+                    console.log(item);
+                    item.project=new Project(nullProject);
+                });
+            });
         },
     },
     computed:{

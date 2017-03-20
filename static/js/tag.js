@@ -4,7 +4,7 @@ var tagComponent={
     props:["tag"],
     methods:{
         deleteTag:function () {
-            this.$emit("delete-tag",this.tag.id);
+            this.$emit("delete-tag",this.tag);
         },
     },
 };
@@ -21,6 +21,9 @@ var tagTasksComponent={
         };
     },
     methods:{
+        createTask:function () {
+             bus.$emit("create-task");
+        },
         _isEmptyObject:function (obj) {
             return $.isEmptyObject(obj);
         }
@@ -53,7 +56,7 @@ var tasks=[new Task({
                 createTime:"2017-03-02 00:00",
                 startTime:"2017-03-01 00:00",
                 endTime:"2017-03-01 00:00",
-                project:null,
+                project:new Project(nullProject),
                 tags:[],
                 done:false}),];
 
@@ -67,18 +70,27 @@ var tagAppVue={
         showThis:false,
         tagAdding:false,
         newTagName:"",
-        currentTag:new Tag("","",[]),
-        tags:[new Tag('0','a',[]),new Tag('0','aa',tasks),new Tag('0','aa',[])],
+        currentTag:new Tag("","",[],""),
+        tags:[],
     },
     methods:{
-        deleteTag:function (tagId) {
-            var tags=this.tags;
-            for(var i=0;i<tags.length;i++){
-                if(tags[i].id==tagId){
-                    tags.splice(i,1);
-                    break;
+        deleteTag:function (tag) {
+            var del=function (tags,tagId) {
+                for(var i=0;i<tags.length;i++){
+                    if(tags[i].id==tagId){
+                        tags.splice(i,1);
+                        break;
+                    }
                 }
             }
+            var that=this;
+            confirmVM.confirm("删除标签","删除标签'"+tag.name+"'",function () {
+                del(that.tags,tag.id);
+                tag.tasks.forEach(function (item) {
+                    del(item.tags,tag.id);
+                });
+                showMessage("删除成功");
+            });
         },
         lookTagTasks:function (tag) {
             $("#tags").animate({"width":"250px"},200,"linear");
