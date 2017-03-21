@@ -17,6 +17,9 @@ var quadrantComponent={
             $("html,body").click();
             this.adding=true;
             var that=this;
+            this.$nextTick(function(){
+                this.$refs.contentInput.focus();
+            });
             $("html,body").click(function (event) {
                 that.adding=false;
                 $("html,body").unbind("click",arguments.callee);
@@ -154,6 +157,7 @@ var taskAppVue={
             var task=new Task(taskInfo);
             this.tasks.push(task);
             this.axixContent="";
+            this.axixAdding=false;;
         },
         newTask:function (taskInfo) {
             taskInfo.id='1';

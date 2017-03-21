@@ -345,7 +345,7 @@
                 <a class="add" href="javascript:;">+</a>
                 <transition name="add">
                     <div v-show="adding" class="task-create" @click.stop="">
-                        <div class="create-input"><input v-model="newContent" type="text" placeholder="输入任务，按Enter键完成" @keyup.enter="newTask"><i></i></div>
+                        <div class="create-input"><input v-model="newContent" ref="contentInput" type="text" placeholder="输入任务，按Enter键完成" @keyup.enter="newTask"><i></i></div>
                         <div class="create-time">
                             <input ref="startTime" class="add-start-time-input" type="text" readonly><i></i><input ref="endTime" class="add-end-time-input" type="text" readonly><span class="more-set">...</span>
                         </div>

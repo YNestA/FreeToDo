@@ -5,12 +5,14 @@
     background-color: #353d40;
     color: #a0a9ad;
     font-size: 12px;
+    z-index: 2;
 }
 
 #main{
     position: relative;
     margin-left: 90px;
     height: 100%;
+    z-index:1;
 }
 #message{
     position: fixed;
