@@ -928,3 +928,16 @@ label.level-done-btn-4 input:checked+span{
     background-image: url(../img/icon.png);
     background-position: -3px -711px;
 }
+
+.tasks-enter,.enter-leave-active{
+    opacity: 0;
+}
+.tasks-enter-active,.tasks-leave-active{
+    transition: all 0.1s linear;
+}
+.tasks-leave-active{
+    position: absolute!important;
+}
+.tasks-move{
+    transition: all 0.1s linear;
+}

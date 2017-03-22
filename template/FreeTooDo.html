@@ -119,10 +119,10 @@
                                 <div>新建任务</div>
                             </div>
                             <div v-show="axixAdding" class="axix-add-detail" key="2">
-                                <div class="axix-add-input"><input v-model="axixContent" type="text" placeholder="按Enter完成输入" @keyup.enter="axixNewTask"></div>
+                                <div class="axix-add-input"><input ref="axixAddInput" v-model="axixContent" type="text" placeholder="按Enter完成输入" @keyup.enter="axixNewTask"></div>
                                 <div class="axix-add-setting">
                                     <label class="level-btn level-btn-1"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="1"><span></span></label>
-                                    <label class="level-btn level-btn-2"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="2"><span></span></label>
+                                    <label class="level-btn  level-btn-2"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="2"><span></span></label>
                                     <label class="level-btn level-btn-3"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="3"><span></span></label>
                                     <label class="level-btn level-btn-4"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="4"><span></span></label>
                                     <div class="axix-add-setting-time">
@@ -352,15 +352,17 @@
                     </div>
                 </transition>
             </div>
-            <ul>
-                <li @click="chooseTask(task)" v-for="task in tasks">
-                    <label @click.stop="">
+            <transition-group name="tasks" tag="ul">
+                <li :key="task"
+                    @click="chooseTask(task)"
+                    v-for="task in tasks">
+                    <label @click.stop.prevent="toggleDone(task)">
                         <input v-model="task.done" type="checkbox">
                         <span></span>
                     </label>
                     <span>[[task.content]]</span><time>[[task.startTime]]</time>
                 </li>
-            </ul>
+            </transition-group>
         </div>
     </script>
     <script type="x-template" id="axix-tasks-template">

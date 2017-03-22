@@ -13,7 +13,7 @@
             <div id="main-left"><img src="../static/img/login/girls.png"></div>
             <div id="main-right">
                 <transition name="fade" mode="out-in">
-                    <form v-if="logining" id="login-form" method="" action="FreeTooDo.html" key="login">
+                    <form v-if="logining" id="login-form" method="post" action="#" key="login">
                         <div class="form-group">
                             <label>邮箱：</label><input type="text" name="email">
                         </div><br>
@@ -34,7 +34,7 @@
                             <a href="javascript:;" id="not-register" @click="logining=false">木有帐号？马上注册一个</a>
                         </div>
                     </form>
-                    <form v-else id="register-form" method="" action="#" key="register">
+                    <form v-else id="register-form" method="post" action="#" key="register">
                         <div class="form-group">
                             <label>注册邮箱：</label><input type="text" name="email">
                         </div><br>

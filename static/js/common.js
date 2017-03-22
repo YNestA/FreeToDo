@@ -14,8 +14,9 @@ var axixTasksComponent={
     },
 }
 
-function showMessage(message){
-    $("#message").text(message).slideDown(300);
+function showMessage(message,type){
+    var messageClass=type?'true':'false';
+    $("#message").attr("class",messageClass).text(message).slideDown(300);
     setTimeout(closeMessage,3000);
 }
 function closeMessage() {

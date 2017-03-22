@@ -68,59 +68,76 @@ var taskDetailVM=new Vue(taskDetailVue);
 
 
 function initData() {
-    noteAppVM.notesAll=originData.notes.map(function (item) {
-        return new Note(item.id,item.content,item.createTime);
-    });
-    noteAppVue.created.apply(noteAppVM);
-    tagAppVM.tags=originData.tags.map(function (item) {
-        return new Tag(item.id,item.name,[],item.createTime);
-    });
-    projectAppVM.projects=originData.projects.map(function (item) {
-        var project=new Project(item);
-        project.tasks=[];
-        return project;
-    });
-    taskAppVM.tasks=originData.tasks.map(function (item) {
-        var taskInfo=item;
-        var originTags=tagAppVM.tags,
-            originProjects=projectAppVM.projects;
-        taskInfo.tags=item.tags.map(function (item1) {
-            for(var i=0;i<=originTags.length;i++){
-                if(item1==originTags[i].id){
-                    return originTags[i];
-                }
-            }
+    function _init(originData) {
+        noteAppVM.notesAll=originData.notes.map(function (item) {
+            return new Note(item.id,item.content,item.createTime);
         });
-        for(var i=0;i<originProjects.length;i++){
-            if(originProjects[i].id==item.project){
-                taskInfo.project=originProjects[i];
-                break;
-            }
-        };
-        return new Task(taskInfo);
-    });
-    var attachTasksFunc=function (origin) {
-        var func=function (item) {
-            var taskIds=[],
-                tasks=taskAppVM.tasks;
-            for(var i=0;i<origin.length;i++){
-                if(item.id==origin[i].id){
-                    taskIds=origin[i].tasks;
-                    break;
-                }
-            }
-            item.tasks=taskIds.map(function (item1) {
-                for(var i=0;i<tasks.length;i++){
-                    if(item1==tasks[i].id){
-                        return tasks[i];
+        noteAppVue.created.apply(noteAppVM);
+        tagAppVM.tags=originData.tags.map(function (item) {
+            return new Tag(item.id,item.name,[],item.createTime);
+        });
+        projectAppVM.projects=originData.projects.map(function (item) {
+            var project=new Project(item);
+            project.tasks=[];
+            return project;
+        });
+        taskAppVM.tasks=originData.tasks.map(function (item) {
+            var taskInfo=item;
+            var originTags=tagAppVM.tags,
+                originProjects=projectAppVM.projects;
+            taskInfo.tags=item.tags.map(function (item1) {
+                for(var i=0;i<=originTags.length;i++){
+                    if(item1==originTags[i].id){
+                        return originTags[i];
                     }
                 }
             });
-        };
-        return func;
+            for(var i=0;i<originProjects.length;i++){
+                if(originProjects[i].id==item.project){
+                    taskInfo.project=originProjects[i];
+                    break;
+                }
+            };
+            return new Task(taskInfo);
+        });
+        var attachTasksFunc=function (origin) {
+            var func=function (item) {
+                var taskIds=[],
+                    tasks=taskAppVM.tasks;
+                for(var i=0;i<origin.length;i++){
+                    if(item.id==origin[i].id){
+                        taskIds=origin[i].tasks;
+                        break;
+                    }
+                }
+                item.tasks=taskIds.map(function (item1) {
+                    for(var i=0;i<tasks.length;i++){
+                        if(item1==tasks[i].id){
+                            return tasks[i];
+                        }
+                    }
+                });
+            };
+            return func;
+        }
+        tagAppVM.tags.forEach(attachTasksFunc(originData.tags));
+        projectAppVM.projects.forEach(attachTasksFunc(originData.projects));
     }
-    tagAppVM.tags.forEach(attachTasksFunc(originData.tags));
-    projectAppVM.projects.forEach(attachTasksFunc(originData.projects));
+    
+    $.ajax({
+        type:"GET",
+        url:"../GetAllDetails/",
+        data:JSON.stringify({}),
+        contentType:"application/json",
+        success:function (data) {
+            _init(data);
+        },
+        error:function () {
+            showMessage("网络未连通?",false);
+            _init(originData);
+        }
+    });
+
 }
 
 $(document).ready(function () {

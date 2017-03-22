@@ -27,18 +27,78 @@ var quadrantComponent={
         },
         newTask:function () {
             var taskInfo={
-                content:this.newContent,
+                content:this.newContent.trim(),
                 level:this.level,
                 startTime:this.$refs.startTime.value,
                 endTime:this.$refs.endTime.value,
+                tags:[],
+                done:false,
             };
-            this.$emit("new-task",taskInfo);
-            this.adding=false;
-            this.newContent="";
+            var that=this;
+            if(!taskInfo.content){
+                showMessage("请填写任务名",false);
+            }else if(timer.compareTime(taskInfo.endTime,taskInfo.startTime)!=1){
+                showMessage("时间区间不正确",false);
+            }else {
+                $.ajax({
+                    type:"POST",
+                    url:"../CreateTask/",
+                    dataType:"json",
+                    contentType:"application/json;charset=utf-8",
+                    data:JSON.stringify(taskInfo),
+                    success:function (data) {
+                        if(data['res']){
+                            taskInfo.id=data['data']['id'];
+                            taskInfo.createTime=data['data']['createTime'];
+                            taskInfo.project=new Project(nullProject);
+                            showMessage("创建成功",true);
+                            that.$emit("new-task", taskInfo);
+                            that.adding = false;
+                            that.newContent = "";
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误?",false);
+                        /*
+                        Object.assign(taskInfo,{
+                            id:"000",
+                            createTime:"2017-3-23 10:30",
+                            project:new Project(nullProject),
+                        });
+                        that.$emit("new-task", taskInfo);
+                        that.adding = false;
+                        that.newContent = "";
+                        */
+                    }
+                });
+
+            }
         },
         chooseTask:function (task) {
             bus.$emit("choose-task",task);
         },
+        toggleDone:function (task) {
+            $.ajax({
+                type:"POST",
+                url:"../ModifyTask/",
+                dataType:"json",
+                contentType:"application/json;charset=utf-8",
+                data:JSON.stringify({
+                    id:task.id,
+                    done:!task.done,
+                }),
+                success:function (data) {
+                    if(data['res']){
+                        task.done=!task.done;
+                    }
+                },
+                error:function () {
+                    showMessage("网络请求错误?",false);
+                }
+            });
+        }
     },
     computed:{
         quadrantID:function () {
@@ -144,29 +204,44 @@ var taskAppVue={
         },
         axixNewTask:function () {
             var taskInfo={
-                id:'12',
                 content:this.axixContent,
                 level:this.axixLevel,
-                createTime:timer.getNow(),
                 startTime:this.$refs.axixStartTime.value,
                 endTime:this.$refs.axixEndTime.value,
                 tags:[],
-                project:new Project(nullProject),
                 done:false,
             };
-            var task=new Task(taskInfo);
-            this.tasks.push(task);
-            this.axixContent="";
-            this.axixAdding=false;;
+            var that=this;
+            if(!taskInfo.content){
+                showMessage("请填写任务内容",false);
+            }else if(timer.compareTime(taskInfo.endTime,taskInfo.startTime)!=1){
+                showMessage("时间区间不正确");
+            }else {
+                $.ajax({
+                    type: 'POST',
+                    url: "../CreateTask/",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    data: JSON.stringify(taskInfo),
+                    success: function (data) {
+                        if (data['res']) {
+                            taskInfo.id = data['data']['id'];
+                            taskInfo.createTime = data['data']['createTime'];
+                            taskInfo.project = new Project(nullProject);
+                            showMessage("创建成功", true);
+                            that.tasks.push(new Task(taskInfo));
+                            that.axixContent="";
+                            that.axixAdding=false;
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误?",false);
+                    },
+                });
+            }
         },
         newTask:function (taskInfo) {
-            taskInfo.id='1';
-            taskInfo.createTime=timer.getNow();
-            taskInfo.done=false;
-            taskInfo.tags=[];
-            taskInfo.project=new Project(nullProject);
-            var task=new Task(taskInfo);
-            this.tasks.push(task);
+            this.tasks.push(new Task(taskInfo));
         },
     },
     computed:{
@@ -210,6 +285,15 @@ var taskAppVue={
             return res;
         },
     },
+    watch:{
+        axixAdding:function (val) {
+            if(val){
+                this.$nextTick(function () {
+                    this.$refs.axixAddInput.focus();
+                });
+            }
+        }
+    },
 };
 var taskDetailVue={
     el:"#task-detail",
@@ -238,7 +322,7 @@ var taskDetailVue={
                 done:false,
             };
             taskAppVM.tasks.push(new Task(taskInfo));
-            showMessage("保存成功");
+            showMessage("保存成功",true);
             bus.$emit("close-task-detail");
         },
         deleteTask:function () {
@@ -259,8 +343,7 @@ var taskDetailVue={
                     del(item.tasks,theTask.id);
                 });
                 that.task=new Task(nullTask);
-                showMessage("删除成功");
-                setTimeout(closeMessage,3000);
+                showMessage("删除成功",true);
                 bus.$emit("close-task-detail");
             });
 
