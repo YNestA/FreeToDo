@@ -127,7 +127,6 @@ function initData() {
     $.ajax({
         type:"GET",
         url:"../GetAllDetails/",
-        data:JSON.stringify({}),
         contentType:"application/json",
         success:function (data) {
             _init(data);

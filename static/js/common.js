@@ -3,6 +3,29 @@
  */
 var bus=new Vue();
 
+var commonAjax={
+    toggleDone:function (task) {
+        $.ajax({
+            type:"POST",
+            url:"../ModifyTask/",
+            dataType:"json",
+            contentType:"application/json;charset=utf-8",
+            data:JSON.stringify({
+                id:task.id,
+                done:!task.done,
+            }),
+            success:function (data) {
+                if(data['res']){
+                    task.done=!task.done;
+                }
+            },
+            error:function () {
+                showMessage("网络请求错误?",false);
+            }
+        });
+    }
+}
+
 var axixTasksComponent={
     delimiters:["[[","]]"],
     template:"#axix-tasks-template",
@@ -11,6 +34,7 @@ var axixTasksComponent={
         chooseTask:function (task) {
             bus.$emit("choose-task",task);
         },
+        toggleDone:commonAjax.toggleDone,
     },
 }
 
@@ -78,3 +102,4 @@ var confirmVM=new Vue({
         }
     }
 });
+

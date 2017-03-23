@@ -51,7 +51,7 @@ var quadrantComponent={
                             taskInfo.id=data['data']['id'];
                             taskInfo.createTime=data['data']['createTime'];
                             taskInfo.project=new Project(nullProject);
-                            showMessage("创建成功",true);
+                            showMessage(data['message'],true);
                             that.$emit("new-task", taskInfo);
                             that.adding = false;
                             that.newContent = "";
@@ -61,16 +61,6 @@ var quadrantComponent={
                     },
                     error:function () {
                         showMessage("网络请求错误?",false);
-                        /*
-                        Object.assign(taskInfo,{
-                            id:"000",
-                            createTime:"2017-3-23 10:30",
-                            project:new Project(nullProject),
-                        });
-                        that.$emit("new-task", taskInfo);
-                        that.adding = false;
-                        that.newContent = "";
-                        */
                     }
                 });
 
@@ -79,26 +69,7 @@ var quadrantComponent={
         chooseTask:function (task) {
             bus.$emit("choose-task",task);
         },
-        toggleDone:function (task) {
-            $.ajax({
-                type:"POST",
-                url:"../ModifyTask/",
-                dataType:"json",
-                contentType:"application/json;charset=utf-8",
-                data:JSON.stringify({
-                    id:task.id,
-                    done:!task.done,
-                }),
-                success:function (data) {
-                    if(data['res']){
-                        task.done=!task.done;
-                    }
-                },
-                error:function () {
-                    showMessage("网络请求错误?",false);
-                }
-            });
-        }
+        toggleDone:commonAjax.toggleDone,
     },
     computed:{
         quadrantID:function () {
@@ -228,8 +199,8 @@ var taskAppVue={
                             taskInfo.id = data['data']['id'];
                             taskInfo.createTime = data['data']['createTime'];
                             taskInfo.project = new Project(nullProject);
-                            showMessage("创建成功", true);
                             that.tasks.push(new Task(taskInfo));
+                            showMessage("创建成功", true);
                             that.axixContent="";
                             that.axixAdding=false;
                         }
@@ -309,24 +280,61 @@ var taskDetailVue={
             bus.$emit("close-task-detail");
             this.task=new Task(nullTask);
         },
+        changeContent:function (event) {
+            if(this.newing){
+                this.task.content=event.target.value;
+            }
+        },
         newTask:function () {
             var taskInfo={
-                id:'task10',
-                content:this.task.content,
+                content:this.$refs.contentInput.value,
                 level:this.task.level,
-                createTime:timer.getNow(),
-                startTime:this.startTime,
-                endTime:this.endTime,
-                project:new Project(nullProject),
-                tags:[],
+                startTime:this.task.startTime,
+                endTime:this.task.endTime,
+                projectId:this.task.project.id,
+                tagsId:this.task.tags.map(function (item) {
+                    return item.id;
+                }),
                 done:false,
             };
-            taskAppVM.tasks.push(new Task(taskInfo));
-            showMessage("保存成功",true);
-            bus.$emit("close-task-detail");
+            if(!taskInfo.content){
+                showMessage("请填写任务内容",false);
+            }else if((!taskInfo.startTime)||(!taskInfo.endTime)||timer.compareTime(taskInfo.endTime,taskInfo.startTime)!=1){
+                showMessage("请正确填写任务区间",false);
+            }else {
+                var that = this;
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json;charset=utf-8",
+                    url: "../CreateTask/",
+                    data: JSON.stringify(taskInfo),
+                    success: function (data) {
+                        if (data['res']) {
+                            taskInfo.id = data['data']['id'];
+                            taskInfo.createTime = data['data']['createTime'];
+                            taskInfo.project = that.task.project;
+                            taskInfo.tags = that.task.tags;
+                            var newTask = new Task(taskInfo);
+                            newTask.project.tasks.push(newTask);
+                            newTask.tags.forEach(function (item) {
+                                item.tasks.push(newTask);
+                            });
+                            taskAppVM.tasks.push(newTask);
+                            bus.$emit("close-task-detail");
+                            showMessage(data['message'], true);
+                        } else {
+                            showMessage(data["message"], false);
+                        }
+                    },
+                    error: function () {
+                        showMessage("网络请求错误", false);
+                    },
+                });
+            }
         },
         deleteTask:function () {
-            var theTask=this.task
+            var theTask=this.task;
             var del=function (tasks,taskId) {
                 for(var i=0;i<tasks.length;i++){
                     if(tasks[i].id==taskId){
@@ -337,14 +345,32 @@ var taskDetailVue={
             };
             var that=this;
             confirmVM.confirm("删除任务","删除任务'"+theTask.content+"'",function () {
-                del(taskAppVM.tasks,theTask.id);
-                del(theTask.project.tasks,theTask.id);
-                theTask.tags.forEach(function (item,index) {
-                    del(item.tasks,theTask.id);
+                $.ajax({
+                    type:"POST",
+                    dataType:"JSON",
+                    contentType:"application/json;charset=utf-8",
+                    url:"",
+                    data:JSON.stringify({
+                        id:that.task.id,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            del(taskAppVM.tasks,theTask.id);
+                            del(theTask.project.tasks,theTask.id);
+                            theTask.tags.forEach(function (item,index) {
+                                del(item.tasks,theTask.id);
+                            });
+                            that.task=new Task(nullTask);
+                            showMessage(data['message'],true);
+                            bus.$emit("close-task-detail");
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
+                    },
                 });
-                that.task=new Task(nullTask);
-                showMessage("删除成功",true);
-                bus.$emit("close-task-detail");
             });
 
         },
@@ -367,53 +393,263 @@ var taskDetailVue={
             });
         },
         cancelProject:function () {
-            var theProject=this.task.project;
-            this.task.project=new Project(nullProject);
-            for(var i=0;i<theProject.tasks;i++){
-                if(theProject.tasks[i].id==this.task.id){
-                    theProject.splice(i,1);
-                }
+            if(!this.newing) {
+                var that=this;
+                $.ajax({
+                    type:"POST",
+                    dataType:"json",
+                    url:"../DeleteTaskFromProject/",
+                    contentType:"application/json;charset=utf-8",
+                    data:JSON.stringify({
+                        id: that.task.id,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            var theProject = that.task.project;
+                            that.task.project = new Project(nullProject);
+                            for (var i = 0; i < theProject.tasks.length; i++) {
+                                if (theProject.tasks[i].id == that.task.id) {
+                                    theProject.tasks.splice(i, 1);
+                                }
+                            }
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
+                    }
+                });
+            }else{
+                this.task.project=new Project(nullProject);
             }
         },
         chooseProject:function (project) {
-            this.cancelProject();
-            this.task.project=project;
-            project.tasks.push(this.task);
+            if(!this.newing) {
+                if (project.id != this.task.project.id) {
+                    var that = this;
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: "../ModifyProjectOfTask/",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({
+                            taskId: that.task.id,
+                            projectId: project.id,
+                        }),
+                        success: function (data) {
+                            if (data['res']) {
+                                if (that.task.project.id) {
+                                    var theProject = that.task.project;
+                                    for (var i = 0; i < theProject.tasks.length; i++) {
+                                        if (theProject.tasks[i].id == that.task.id) {
+                                            theProject.tasks.splice(i, 1);
+                                        }
+                                    }
+                                }
+                                that.task.project = project;
+                                project.tasks.push(that.task);
+                                showMessage(data['message'], true);
+                            } else {
+                                showMessage(data['message'], false);
+                            }
+                        },
+                        error: function () {
+                            showMessage("网络请求错误", false);
+                        }
+                    });
+                }
+            }else{
+                this.task.project=project;
+            }
         },
         cancelTag:function (tag) {
-            var tags=this.task.tags;
-            for(var i=0;i<tags.length;i++){
-                if(tag.id==tags[i].id){
-                    tags.splice(i,1);
-                }
-            }
-            var tasks=tag.tasks;
-            for(var i=0;i<tasks.length;i++){
-                if(this.task.id==tasks[i].id){
-                    tasks.splice(i,1);
+            if(!this.newing){
+                var that=this;
+                $.ajax({
+                    type:"POST",
+                    dataType:"json",
+                    contentType:"application/json;charset=utf-8",
+                    url:"../DeleteTaskFromTag/",
+                    data:JSON.stringify({
+                        taskId:that.task.id,
+                        tagId:tag.id,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            var tags=that.task.tags;
+                            for(var i=0;i<tags.length;i++){
+                                if(tag.id==tags[i].id){
+                                    tags.splice(i,1);
+                                }
+                            }
+                            var tasks=tag.tasks;
+                            for(var i=0;i<tasks.length;i++){
+                                if(that.task.id==tasks[i].id){
+                                    tasks.splice(i,1);
+                                }
+                            }
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
+                    },
+                })
+            }else{
+                var tags=this.task.tags;
+                for(var i=0;i<tags.length;i++){
+                    if(tag.id==tags[i].id){
+                        tags.splice(i,1);
+                    }
                 }
             }
         },
         chooseTag:function (tag) {
-            this.task.tags.push(tag);
-            tag.tasks.push(this.task);
-        }
+            if(!this.newing){
+                var that=this;
+                $.ajax({
+                    type:"POST",
+                    dataType:"json",
+                    contentTYpe:"application/json;charset=utf-8",
+                    url:"../AddTaskToTag/",
+                    data:JSON.stringify({
+                        taskId:that.task.id,
+                        tagId:tag.id,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            that.task.tags.push(tag);
+                            tag.tasks.push(that.task);
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
+                    },
+                });
+            }
+            else{
+                this.task.tags.push(tag);
+            }
+        },
+        toggleDone:commonAjax.toggleDone,
+        modifyContent:function () {
+            if(!this.newing) {
+                var newContent = this.$refs.contentInput.value.trim();
+                if(newContent!=this.task.content) {
+                    if (newContent) {
+                        var that = this;
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            contentType: "application/json;charset=utf-8",
+                            url: "../ModifyTask/",
+                            data: JSON.stringify({
+                                id: that.task.id,
+                                content: newContent,
+                            }),
+                            success: function (data) {
+                                if (data['res']) {
+                                    that.task.content = newContent;
+                                    showMessage(data['message'], true);
+                                } else {
+                                    showMessage(data['message'], false);
+                                }
+                            },
+                            error: function () {
+                                showMessage("网络请求错误?", false);
+                            }
+                        });
+                    } else {
+                        showMessage("任务内容不能为空", false);
+                    }
+                }
+            }
+        },
+        modifyLevel:function (level) {
+            if(!this.newing) {
+                if (level != this.task.level) {
+                    var that = this;
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        contentType: "application/json;charset=utf-8",
+                        url: "../ModifyTask/",
+                        data: JSON.stringify({
+                            id: that.task.id,
+                            level: level,
+                        }),
+                        success: function (data) {
+                            if (data['res']) {
+                                that.task.level = level;
+                                showMessage(data['message'], true);
+                            } else {
+                                showMessage(data['message'], false);
+                            }
+                        },
+                        error: function () {
+                            showMessage("网络请求错误?", false);
+                        }
+                    });
+                }
+            }else{
+                this.task.level=level;
+            }
+        },
+
     },
     computed:{
-        content:{
-            get:function () {
-                return this.task.content;
-            },
-            set:function (val) {
-                this.task.content=val;
-            },
-        },
         startTime:{
             get:function () {
                 return this.task.startTime;
             },
             set:function (val) {
-                this.task.startTime=val;
+                if(!this.newing) {
+                    var cancel = function () {
+                        this.startTime = this.task.startTime;
+                        this.$refs.startTimeInput.value = this.task.startTime;
+                    }.bind(this);
+                    if (val !== this.task.startTime) {
+                        var that = this;
+                        if (timer.compareTime(this.endTime, val) == 1) {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "../ModifyTask/",
+                                contentType: "application/json;charset=utf-8",
+                                data: JSON.stringify({
+                                    id: that.task.id,
+                                    startTime: val,
+                                }),
+                                success: function (data) {
+                                    if (data['res']) {
+                                        that.task.startTime = val;
+                                        showMessage(data['message'], true);
+                                    }
+                                    else {
+                                        cancel();
+                                        showMessage(data['message'], false);
+                                    }
+                                },
+                                error: function () {
+                                    cancel();
+                                    showMessage("网络请求错误?", false);
+                                }
+                            });
+                        } else {
+                            cancel();
+                            showMessage("时间区间不正确", false);
+                        }
+                    }
+                }else{
+                    this.task.startTime=val;
+                }
             }
         },
         endTime:{
@@ -421,24 +657,47 @@ var taskDetailVue={
                 return this.task.endTime;
             },
             set:function (val) {
-                this.task.endTime=val;
+                if(!this.newing) {
+                    var cancel = function () {
+                        this.endTime = this.task.endTime;
+                        this.$refs.endTimeInput.value = this.task.endTime;
+                    }.bind(this);
+                    if (val !== this.task.endTime) {
+                        var that = this;
+                        if (timer.compareTime(val, this.startTime) == 1) {
+                            $.ajax({
+                                type: "POST",
+                                dataType: "json",
+                                url: "../ModifyTask/",
+                                contentType: "application/json;charset=utf-8",
+                                data: JSON.stringify({
+                                    id: that.task.id,
+                                    endTime: val,
+                                }),
+                                success: function (data) {
+                                    if (data['res']) {
+                                        that.task.endTime = val;
+                                        showMessage(data['message'], true);
+                                    }
+                                    else {
+                                        cancel();
+                                        showMessage(data['message'], false);
+                                    }
+                                },
+                                error: function () {
+                                    cancel();
+                                    showMessage("网络请求错误?", false);
+                                }
+                            });
+                        } else {
+                            cancel();
+                            showMessage("时间区间不正确", false);
+                        }
+                    }
+                }else{
+                    this.task.endTime=val;
+                }
             },
-        },
-        level:{
-            get:function () {
-                return this.task.level;
-            },
-            set:function (val) {
-                this.task.level=val;
-            },
-        },
-        done:{
-            get:function () {
-                return this.task.done;
-            },
-            set:function (val) {
-                this.task.done=val;
-            }
         },
         project:function () {
             return this.task.project;

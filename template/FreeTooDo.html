@@ -299,14 +299,14 @@
                     </div>
                 </div>
                 <ul>
-                    <li id="task-detail-content" :class="'task-detail-content-'+task.level"><label v-if="!newing" :class="['level-done-btn','level-done-btn-'+level]"><input v-model="done" type="checkbox"><span></span></label><input v-model="content" type="text" placeholder="输入任务内容"></li>
+                    <li id="task-detail-content" :class="'task-detail-content-'+task.level"><label @click.prevent="toggleDone" v-if="!newing" :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label><input ref="contentInput" :value="task.content" @input="changeContent($event)" type="text" placeholder="输入任务内容" @keyup.enter="modifyContent"></li>
                     <li id="task-detail-level">
-                        <label class="level-btn level-btn-1"><input v-model="level" type="radio" name="level" :value="1"><span></span></label><span v-show="task==1">很重要-很紧急</span>
-                        <label class="level-btn level-btn-2"><input v-model="level" type="radio" name="level" :value="2"><span></span></label><span v-show="task==2">重要-不紧急</span>
-                        <label class="level-btn level-btn-3"><input v-model="level" type="radio" name="level" :value="3"><span></span></label><span v-show="task==3">不重要-紧急</span>
-                        <label class="level-btn level-btn-4"><input v-model="level" type="radio" name="level" :value="4"><span></span></label><span v-show="task==4">不重要-不紧急</span>
+                        <label @click.prevent="modifyLevel(1)" class="level-btn level-btn-1"><input v-model="task.level" type="radio" name="level" :value="1"><span></span></label><span v-show="task==1">很重要-很紧急</span>
+                        <label @click.prevent="modifyLevel(2)" class="level-btn level-btn-2"><input v-model="task.level" type="radio" name="level" :value="2"><span></span></label><span v-show="task==2">重要-不紧急</span>
+                        <label @click.prevent="modifyLevel(3)" class="level-btn level-btn-3"><input v-model="task.level" type="radio" name="level" :value="3"><span></span></label><span v-show="task==3">不重要-紧急</span>
+                        <label @click.prevent="modifyLevel(4)" class="level-btn level-btn-4"><input v-model="task.level" type="radio" name="level" :value="4"><span></span></label><span v-show="task==4">不重要-不紧急</span>
                     </li>
-                    <li id="task-detail-time"><i></i><input :value="startTime" id="task-detail-start-time-input" class="start-time-input" type="text" placeholder="选择开始日期"><i></i><input :value="endTime" class="end-time-input" id="task-detail-end-time-input" type="text" placeholder="选择结束日期"></li>
+                    <li id="task-detail-time"><i></i><input :value="startTime" ref="startTimeInput" id="task-detail-start-time-input" class="start-time-input" type="text" placeholder="选择开始日期"><i></i><input :value="endTime" ref="endTimeInput" class="end-time-input" id="task-detail-end-time-input" type="text" placeholder="选择结束日期"></li>
                     <li id="task-detail-project"><i></i><input @click.stop="showProjects" v-model="project.name" type="text" placeholder="项目名称">
                         <ul v-show="showProjectList" id="task-detail-project-list">
                             <li :class="[project.id==task.project.id?'current':'']"
@@ -374,7 +374,7 @@
             <ul>
                 <li v-for="task in tasks">
                     <time>[[task.createTime.slice(-5)]]</time>
-                    <label :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label>
+                    <label @click.stop.prevent="toggleDone(task)" :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label>
                     <div @click="chooseTask(task)">
                         <div class="axix-task-content">[[task.content]]</div>
                         <div><i></i><time>[[task.startTime]]</time><i></i></div>
@@ -537,7 +537,7 @@
                 },
                 {
                     id:"tag1",
-                    name:"啊啊",
+                    name:"啊啊啊啊啊啊啊",
                     tasks:[],
                     createTime:"2017-04-20 18:00",
                 },
