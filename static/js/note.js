@@ -53,42 +53,84 @@ var noteAppVue={
     methods:{
         dealNoteInput:function (event) {
             if(event.ctrlKey&&event.keyCode==13){
-                if(this.newNoteContent.trim()){
-                    var newNote=new Note('0',this.newNoteContent,timer.getNow());
-                    this.notesAll.push(newNote);
-                    var theOne=[this.$refs.notes1,this.notes1];
-                    [[this.$refs.notes2,this.notes2],
-                        [this.$refs.notes3,this.notes3],
-                        [this.$refs.notes4,this.notes4]].forEach(function (item) {
-                        if(item[0].clientHeight<theOne[0].clientHeight){
-                            theOne=item;
-                        }
+                var content=this.newNoteContent.trim();
+                if(content){
+                    var that=this;
+                    $.ajax({
+                        type:"POST",
+                        dataType:"json",
+                        contentType:"application/json;charset=utf-8",
+                        url:"../CreateNote/",
+                        data:JSON.stringify({
+                            content:content,
+                        }),
+                        success:function (data) {
+                            if(data['res']){
+                                var newNote=new Note(data['data']['id'],content,data['data']['createTime']);
+                                that.notesAll.push(newNote);
+                                var theOne=[that.$refs.notes1,that.notes1];
+                                [[that.$refs.notes2,that.notes2],
+                                    [that.$refs.notes3,that.notes3],
+                                    [that.$refs.notes4,that.notes4]].forEach(function (item) {
+                                        if(item[0].clientHeight<theOne[0].clientHeight){
+                                            theOne=item;
+                                        }
+                                    });
+                                theOne[1].push(newNote);
+                                that.newNoteContent='';
+                                that.$nextTick(function () {
+                                    $("#notes >div:last-child").perfectScrollbar('update');
+                                });
+                                showMessage(data['message'],true);
+                            }else{
+                                showMessage(data['message'],false);
+                            }
+                        },
+                        error:function () {
+                            showMessage("网络请求错误",false);
+                        },
                     });
-                    theOne[1].push(newNote);
-                    this.newNoteContent='';
-                    this.$nextTick(function () {
-                        $("#notes >div:last-child").perfectScrollbar('update');
-                    });
+                }else{
+                    showMessage("便签内容不能为空",false);
                 }
             }
         },
         deleteNote:function (note,ulNum) {
             var that=this;
             confirmVM.confirm("删除便签","删除便签'"+note.content+"'",function () {
-                for(var i=0;i<that.notesAll.length;i++){
-                   if(that.notesAll[i].id==note.id){
-                        that.notesAll.splice(i,1);
-                        break;
+                $.ajax({
+                    type:"POST",
+                    dataType:"JSON",
+                    contentType:"application/json;charset",
+                    url:"../DeleteNote",
+                    data:JSON.stringify({
+                        id:note.id,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            for(var i=0;i<that.notesAll.length;i++){
+                                if(that.notesAll[i].id==note.id){
+                                    that.notesAll.splice(i,1);
+                                    break;
+                                }
+                            }
+                            var ul=that['notes'+ulNum];
+                            for( var i=0;i<ul.length;i++){
+                                if(ul[i].id==note.id){
+                                    ul.splice(i,1);
+                                    break;
+                                }
+                            }
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
                     }
-                }
-                var ul=that['notes'+ulNum];
-                for( var i=0;i<ul.length;i++){
-                    if(ul[i].id==note.id){
-                        ul.splice(i,1);
-                        break;
-                    }
-                }
-                showMessage("删除成功");
+                });
+
             });
         }
     },

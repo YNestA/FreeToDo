@@ -64,12 +64,52 @@ var projectComponent={
             this.$emit("modify-req",this.project);
         },
         fileProject:function () {
-            this.project.isFile=true;
-            //this.$emit("file-project",this.project);
+            var project=this.project;
+            $.ajax({
+                type:"POST",
+                dataType:"JSON",
+                contentType:"application/json;charset=utf-8",
+                url:"../ModifyProject/",
+                data:JSON.stringify({
+                    id:project.id,
+                    isFile:true,
+                }),
+                success:function (data) {
+                    if(data['res']){
+                        project.isFile=true;
+                        showMessage(data['message'],true);
+                    }else{
+                        showMessage(data['message'],false);
+                    }
+                },
+                error:function () {
+                    showMessage('网络请求错误',false);
+                }
+            });
         },
         nfileProject:function () {
-            this.project.isFile=false;
-            //this.$emit("nfile-project",this.project);
+            var project=this.project;
+            $.ajax({
+                type: "POST",
+                dataType: "JSON",
+                contentType: "application/json;charset=utf-8",
+                url: "../ModifyProject/",
+                data: JSON.stringify({
+                    id: project.id,
+                    isFile: false,
+                }),
+                success: function (data) {
+                    if (data['res']) {
+                        project.isFile = false;
+                        showMessage(data['message'], true);
+                    } else {
+                        showMessage(data['message'], false);
+                    }
+                },
+                error: function () {
+                    showMessage('网络请求错误', false);
+                }
+            });
         },
         deleteProject:function () {
             this.$emit("delete-project",this.project);
@@ -96,26 +136,102 @@ var projectManagerComponent={
         return {
             newName:this.name,
             newContent:this.content,
-        };
+        }
     },
     methods:{
         newProject:function () {
-            this.$emit("new-project",{
-                name: this.newName,
-                content:this.newContent,
-            });
-            this.clearManager();
+            var name=this.newName.trim(),
+                content=this.newContent.trim();
+            if(!name){
+                showMessage("项目名称不能为空",false);
+            }else if(!content){
+                showMessage("项目简介不能为空",false);
+            }else {
+                var that=this;
+                $.ajax({
+                    type: "POST",
+                    dataType: "JSON",
+                    contentType: "application/json;charset=utf-8",
+                    url: "../CreateProject/",
+                    data: {
+                        name: name,
+                        content: content,
+                        isFile: false,
+                        tasks: [],
+                    },
+                    success: function (data) {
+                        if (data['res']) {
+                            var project = new Project({
+                                id: data['data']['id'],
+                                name: name,
+                                content:content,
+                                isFile:false,
+                                tasks:[],
+                                createTime:data['data']['createTime'],
+                            });
+                            that.$emit("new-project",project);
+                            that.clearManager();
+                            showMessage(data['message'],true);
+                        } else {
+                            showMessage(data['message'])
+                        }
+                    },
+                    error: function (){
+                        var project= new Project({
+                                id: 'id',
+                                name: name,
+                                content:content,
+                                isFile:false,
+                                tasks:[],
+                                createTime:'createTime',
+                            });
+                            that.$emit("new-project",project);
+                            that.clearManager();
+                        showMessage("网络请求错误",false);
+                    }
+                });
+            }
         },
         closeManager:function () {
             this.$emit("close-manager");
         },
         modifyProject:function () {
-            this.$emit("modify-project",{
-                id:this.id,
-                name:this.newName,
-                content:this.newContent,
-            });
-            this.clearManager();
+            var newName=this.newName.trim(),
+                newContent=this.newContent.trim();
+            if(!newName){
+                showMessage("项目名称不能为空",false);
+            }else if(!newContent){
+                showMessage("项目简介不能为空",false);
+            }else{
+                var that=this;
+                $.ajax({
+                    type:"POST",
+                    dataType:"JSON",
+                    contentType:"application/json;charset=utf-8",
+                    url:"../ModifyProject/",
+                    data:JSON.stringify({
+                        id:that.id,
+                        name:newName,
+                        content:newContent,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            that.$emit('modify-project',{
+                                id:that.id,
+                                name:newName,
+                                content:newContent,
+                            });
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
+                    }
+                });
+            }
+
         },
         clearManager:function () {
             this.newName="";
@@ -130,36 +246,7 @@ var projectManagerComponent={
         },
     }
 };
-/*
-var tasks=[new Task({
-                id:'0',
-                content:'啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊',
-                level:1,
-                createTime:"2017-03-02 00:00",
-                startTime:"2017-03-01 00:00",
-                endTime:"2017-03-01 00:00",
-                project:new Project(nullProject),
-                tags:[],
-                done:false,
-            }),new Task({
-                id:'1',
-                content:'啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊',
-                level:1,
-                createTime:"2017-03-02 00:00",
-                startTime:"2017-03-01 00:00",
-                endTime:"2017-03-01 00:00",
-                project:new Project(nullProject),
-                tags:[],
-                done:true,
-            })];
-var projects=[new Project({id:'pro0',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:[],isFile:false,createTime:''}),
-    new Project({id:'pro1',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'pro2',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'pro3',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'pro4',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''}),
-    new Project({id:'pro5',name:'啊啊啊啊啊啊啊啊',content:"aaaaa",tasks:tasks,isFile:false,createTime:''})];
 
-*/
 var projectAppVue={
     el:"#project-app",
     delimiters:['[[',']]'],
@@ -185,11 +272,21 @@ var projectAppVue={
             $("#project-tasks").animate({"margin-left":"250px"},200,"linear");
             this.currentProject=project;
         },
-        newProject:function (projectInfo) {
-            console.log(projectInfo);
+        newProject:function (project) {
+            this.projects.push(project);
+            this.showManager=false;
         },
         modifyProject:function (projectInfo) {
             console.log(projectInfo);
+            for(var i=0;i<this.projects.length;i++){
+                if(this.projects[i].id==projectInfo.id){
+                    var theProject=this.projects[i];
+                    theProject.name=projectInfo.name;
+                    theProject.content=projectInfo.content;
+                    break;
+                }
+            }
+            this.showManager=false;
         },
         managerAdd:function () {
             this.showManager=true;
@@ -216,10 +313,30 @@ var projectAppVue={
             };
             var that=this;
             confirmVM.confirm("删除项目","删除项目'"+project.name+"'",function () {
-                del(that.projects,project.id);
-                project.tasks.forEach(function (item) {
-                    console.log(item);
-                    item.project=new Project(nullProject);
+                $.ajax({
+                    type:"POST",
+                    dataType:"JSON",
+                    contentType:"application/json;charset=utf-8",
+                    url:"../DeleteProject/",
+                    data:JSON.stringify({
+                        id:project.id,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            del(that.projects,project.id);
+                            project.tasks.forEach(function (item) {
+                                item.project=new Project(nullProject);
+                            });
+                            $("#projects").animate({"width":"100%"},200,"linear");
+                            $("#project-tasks").animate({"margin-left":"100%"},200,"linear");
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage('网络请求错误',false);
+                    },
                 });
             });
         },

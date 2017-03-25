@@ -332,7 +332,7 @@
             </div>
         </div>
     </div>
-
+    <div id="loading-background"><span><img src="../static/img/loading.gif"></span></div>
     <script type="x-template" id="menu-item-template">
         <li :id="id" :class="{current:current}" @click="choose">
             <i></i>[[cname]]
@@ -473,7 +473,7 @@
                 </div>
                 <div id="project-manager-content">
                     <span>项目简介</span>
-                    <textarea v-model="newContent"></textarea>
+                    <textarea v-model="newContent" spellcheck="false"></textarea>
                 </div>
                 <div id="project-manager-btn">
                     <a @click="newProject" href="javascript:;" v-if="type=='add'">创建</a>

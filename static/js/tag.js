@@ -85,11 +85,32 @@ var tagAppVue={
             }
             var that=this;
             confirmVM.confirm("删除标签","删除标签'"+tag.name+"'",function () {
-                del(that.tags,tag.id);
-                tag.tasks.forEach(function (item) {
-                    del(item.tags,tag.id);
+                $.ajax({
+                    type:"POST",
+                    dataType:"JSON",
+                    contentType:"application/json",
+                    url:"../DeleteTag/",
+                    data:JSON.stringify({
+                        id:tag.id,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            del(that.tags,tag.id);
+                            tag.tasks.forEach(function (item) {
+                                del(item.tags,tag.id);
+                            });
+                            $("#tags").animate({"width":"100%"},200,"linear");
+                            $("#tag-tasks").animate({"margin-left":"100%"},200,"linear");
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
+                    }
                 });
-                showMessage("删除成功");
+
             });
         },
         lookTagTasks:function (tag) {
@@ -98,9 +119,34 @@ var tagAppVue={
             this.currentTag=tag;
         },
         newTag:function () {
-            this.tags.push(new Tag('0',this.newTagName,[],timer.getNow()));
-            this.tagAdding=false;
-            this.newTagName="";
+            var tagName=this.newTagName.trim();
+            if(tagName){
+                var that=this;
+                $.ajax({
+                    type:"POST",
+                    dataType:"JSON",
+                    contentType:"application/json;charset=utf-8",
+                    url:"../CreateTag/",
+                    data:JSON.stringify({
+                        name:tagName,
+                    }),
+                    success:function (data) {
+                        if(data['res']){
+                            that.tags.push(new Tag(data['data']['id'],tagName,[],data['data']['createTime']));
+                            that.tagAdding=false;
+                            that.newTagName="";
+                            showMessage(data['message'],true);
+                        }else{
+                            showMessage(data['message'],false);
+                        }
+                    },
+                    error:function () {
+                        showMessage("网络请求错误",false);
+                    },
+                });
+            }else{
+                showMessage("标签名字不能为空",false);
+            }
         },
     },
 };

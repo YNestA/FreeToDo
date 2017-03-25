@@ -122,6 +122,7 @@ function initData() {
         }
         tagAppVM.tags.forEach(attachTasksFunc(originData.tags));
         projectAppVM.projects.forEach(attachTasksFunc(originData.projects));
+        $("#loading-background").fadeOut(1000);
     }
     
     $.ajax({
