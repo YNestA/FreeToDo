@@ -90,6 +90,13 @@
     line-height: 40px;
     cursor: pointer;
 }
+#bottom-menu >ul li a{
+    display: block;
+    color: #444;
+}
+#bottom-menu >ul li a:hover{
+    color: #fff;
+}
 #bottom-menu>ul li i{
     width: 32px;
     height: 32px;
