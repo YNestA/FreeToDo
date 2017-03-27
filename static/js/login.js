@@ -1,5 +1,6 @@
+var LRVM;
 $(document).ready(function () {
-    var LRVM=new Vue({
+    LRVM=new Vue({
         el:"#main",
         delimiters:["[[","]]"],
         data:{

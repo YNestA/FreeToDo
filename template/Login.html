@@ -60,7 +60,11 @@
     <script type="text/javascript" src="../static/lib/vue.js"></script>
     <script type="text/javascript" src="../static/js/login.js"></script>
     <script type="text/javascript">
-
+        $(document).ready(function () {
+            LRVM.showLoginError=false;
+            LRVM.loginErrorMessage="";
+            LRVM.loginEmail="";
+        });
     </script>
 </body>
 </html>
