@@ -41,6 +41,7 @@
     height: 100%;
     box-sizing: border-box;
     overflow: hidden;
+    z-index: 50;
 }
 
 #f-project-btn,#nf-project-btn{
@@ -101,7 +102,7 @@
     display: block;
     border-radius: 4px;
     float: left;
-    width: 210px;
+    width: 200px;
     height: 110px;
     border: 1px solid #ddd;
     box-shadow: 0 0 3px 1px #eee;
@@ -128,7 +129,7 @@ div.project-name{
 }
 div.project-info{
     height: 60px;
-    padding: 0 15px;
+    padding: 0 10px;
     border-top: 1px dashed #e5e5e5;
 }
 div.project-info span{
