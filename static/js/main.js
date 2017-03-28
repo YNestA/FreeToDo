@@ -33,6 +33,7 @@ var menuVue={
         searching:false,
         systeming:false,
         showSearchBtn:false,
+        user:user,
     },
     methods:{
         choose:function (name) {
@@ -55,6 +56,14 @@ var menuVue={
         system:function () {
             this.systeming=!this.systeming;
         },
+        showSetting:function () {
+            this.menuItems.forEach(function (item) {
+                item.current=false;
+            });
+            bus.$emit("choose-app","setting");
+            this.searching=false;
+            this.systeming=false
+        }
     },
 };
 
@@ -65,10 +74,19 @@ var projectAppVM=new Vue(projectAppVue);
 var tagAppVM=new Vue(tagAppVue);
 var taskAppVM=new Vue(taskAppVue);
 var taskDetailVM=new Vue(taskDetailVue);
-
+var settingVM=new Vue(settingVue);
 
 function initData() {
     function _init(originData) {
+
+        user.email=originData.user.email;
+        user.nickname=originData.user.nickname;
+        user.summary=originData.user.summary;
+        user.headImg=originData.user.headImg;
+        menuVM.nickname=settingVM.nickname;
+        menuVM.headImg=settingVM.headImg;
+        taskDetailVM.headImg=settingVM.headImg;
+
         noteAppVM.notesAll=originData.notes.map(function (item) {
             return new Note(item.id,item.content,item.createTime);
         });
@@ -134,7 +152,7 @@ function initData() {
         },
         error:function () {
             showMessage("网络未连通?",false);
-            _init(originData);
+            //_init(originData);
         }
     });
 
@@ -168,7 +186,7 @@ $(document).ready(function () {
         closeTaskDetail();
     });
     bus.$on("choose-app",function (appName) {
-        var apps={'task':taskAppVM,'note':noteAppVM,'project':projectAppVM,'tag':tagAppVM};
+        var apps={'task':taskAppVM,'note':noteAppVM,'project':projectAppVM,'tag':tagAppVM,'setting':settingVM};
         for(var key in apps){
             apps[key].showThis=(key==appName)?true:false;
         }

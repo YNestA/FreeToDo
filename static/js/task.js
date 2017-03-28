@@ -271,6 +271,7 @@ var taskDetailVue={
     delimiters:["[[","]]"],
     data:{
         newing:true,
+        user:user,
         task:new Task(nullTask),
         showProjectList:false,
         showTagsList:false,

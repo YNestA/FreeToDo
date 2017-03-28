@@ -1,0 +1,189 @@
+#setting-app{
+    position: relative;
+    height: 100%;
+    overflow:hidden;
+}
+#setting-title{
+    position: absolute;
+    width: 100%;
+    background-color: #fff;
+    z-index: 500;
+    box-sizing: border-box;
+    height: 45px;
+    padding: 0 20px;
+    color: #999;
+    font-size: 16px;
+    line-height: 45px;
+    border-bottom: 1px solid #e5e5e5;
+}
+#setting-title a{
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+    color:#737373;
+    font-size: 15px;
+}
+#setting-title a:before{
+    content: "";
+    height: 2px;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    bottom:1px;
+    background-color: transparent;
+}
+#setting-title a.current,#setting-title a:hover{
+    color:#212425;
+}
+#setting-title a.current:before,#setting-title a:hover:before{
+    background-color: #00aeef;
+}
+#setting-container{
+    position: relative;
+    padding: 45px 20px 0px;
+    height: 100%;
+}
+#setting-container >div{
+    height: 100%;
+}
+#profile-setting{
+    margin: 30px 0;
+}
+
+#profile-setting >div:hover{
+    background-color: #f5f5f5;
+}
+#profile-setting >div{
+    margin-bottom: 10px;
+}
+#profile-setting input{
+    box-sizing: border-box;
+    width: 250px;
+    border: none;
+    padding: 0 10px;
+    background-color: transparent;
+    height: 25px;
+    margin-right: 20px;
+    transition: box-shadow 0.2s linear;
+}
+#profile-setting a{
+    color: #428bca;
+}
+#profile-setting a:hover{
+    color: #327bba;
+}
+#profile-setting >div.current{
+    background-color: #fff;
+}
+#profile-setting >div.current input{
+    border: 1px solid #3fb6da;
+    box-shadow: 0px 0px 5px 1px rgba(69,182,218,0.5);
+}
+#profile-setting >div>span{
+    position: absolute;
+    display: block;
+    width: 40px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+}
+#profile-setting >div>div{
+    margin-left: 50px;
+    height: 50px;
+    line-height: 50px;
+}
+#profile-setting #profile-head{
+    height: 80px;
+}
+#profile-setting #profile-head>*{
+    height: 80px;
+    line-height: 80px;
+}
+
+#profile-head >div>div{
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    position: relative;
+    width: 80px;
+    height: 100%;
+}
+#profile-head >div img{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+#profile-head input{
+    display: none;
+}
+#profile-head >div>div a{
+    position: absolute;
+    width: 60px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 14px;
+    left: 50%;
+    top: 50%;
+    color: #2a6496;
+    transform: translate(-50%,-50%);
+    display: none;
+}
+#profile-head >div>div:hover a{
+    display: block;
+    color: #428bca;
+}
+
+#password-setting{
+    margin: 30px 0;
+}
+#password-setting >div{
+    height: 35px;
+    margin-bottom: 20px;
+}
+#password-setting >div span{
+    display: inline-block;
+    width: 80px;
+    height: 35px;
+    line-height: 35px;
+    text-align: right;
+    margin-right: 15px;
+}
+#password-setting input{
+    width: 250px;
+    box-sizing: border-box;
+    height: 35px;
+    padding-left: 15px;
+    border: 1px solid #d5d5d5;
+    transition: box-shadow 0.2s linear;
+    box-shadow: 0px 0px 1px 1px rgba(0,0,0,0.05) inset;
+}
+#password-setting input:focus{
+    border-color: #3fb6da;
+    box-shadow: 0 0 5px 1px rgba(69,182,218,0.5);
+}
+#password-setting div:last-child >div{
+    margin-left: 95px;
+    height:35px;
+}
+#password-setting div a{
+    border-radius: 3px;
+    box-sizing: border-box;
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    padding: 0 20px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+#password-setting div a:first-child{
+    color:#333;
+    border: 1px solid #d5d5d5;
+}
+#password-setting div a:first-child:hover{
+    background-color: #eee;
+}
+#password-setting div a:last-child{
+    color: #fff;
+    background-color: #00c0ee;
+}

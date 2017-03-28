@@ -381,6 +381,12 @@ div.create-time span.more-set{
     display: inline-block;
     vertical-align: middle;
 }
+#task-detail div.title >span{
+    margin-left: 10px;
+    color: #777;
+    font-size: 14px;
+
+}
 #task-detail div.title >div:first-child{
     position: relative;
     width: 26px;

@@ -12,6 +12,7 @@
     <link type="text/css" rel="stylesheet" href="../static/css/note.css">
     <link type="text/css" rel="stylesheet" href="../static/css/tag.css">
     <link type="text/css" rel="stylesheet" href="../static/css/project.css">
+    <link type="text/css" rel="stylesheet" href="../static/css/setting.css">
 </head>
 <body>
     <div id="whole-container">
@@ -29,10 +30,10 @@
         </div>
         <div id="whole-menu">
             <div id="user-head">
-                <img src="../static/img/menu/user_head.png">
+                <img :src="user.headImg">
                 <i></i>
             </div>
-            <div id="user-name">用户昵称</div>
+            <div id="user-name">[[user.nickname]]</div>
             <nav>
                 <ul>
                     <menu-item
@@ -49,7 +50,7 @@
                     <li id="menu-search" :class="{current:searching}" @click="search" v-if="showSearchBtn"><i></i></li>
                     <li id="menu-system" @click="system">...</li>
                     <ul v-show="systeming" id="system">
-                            <li>帐号设置</li>
+                            <li @click="showSetting">帐号设置</li>
                             <li>使用帮助</li>
                             <li><a href="../Logout/">退出登录</a></li>
                     </ul>
@@ -280,13 +281,71 @@
                         </div>
                     </div>
                 </div>
+                <div v-show="showThis" id="setting-app">
+                    <div id="setting-title">
+                        <a :class="{'current':!passwording}" href="javascript:;" @click="passwording=false">个人资料</a>
+                        <a :class="{'current':passwording}" href="javascript:;" @click="passwording=true">修改密码</a>
+                    </div>
+                    <div id="setting-container">
+                        <div v-show="!passwording">
+                            <div id="profile-setting">
+                                <div id="profile-head"><span>头像</span>
+                                    <div>
+                                        <div>
+                                            <img :src="headImg">
+                                            <a href="javascript:;" @click="$refs.headInput.click()">重新上传</a>
+                                            <input type="file" ref="headInput" @change="uploadHead">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="profile-nickname" :class="{'current':modifying=='nickname',}"><span>昵称</span>
+                                    <div><input v-model="nickname" @click.stop ref="nicknameInput" type="text" :readonly="modifying!='nickname'">
+                                        <a href="javascript:;"
+                                           v-show="modifying!='nickname'"
+                                           @click.stop="modifyNickname">编辑</a>
+                                        <a href="javascript:;"
+                                           @click="saveNickname"
+                                           v-show="modifying=='nickname'">保存</a>
+                                    </div>
+                                </div>
+                                <div id="profile-email"><span>邮箱</span>
+                                    <div>
+                                        <input type="text" v-model="email" readonly>
+                                    </div>
+                                </div>
+                                <div id="profile-summary" :class="{'current':modifying=='summary'}"><span>简介</span>
+                                    <div>
+                                        <input v-model="summary"  @click.stop ref="summaryInput" type="text" :readonly="modifying!='summary'">
+                                        <a href="javascript:;"
+                                           @click.stop="modifySummary"
+                                           v-show="modifying!='summary'">编辑</a>
+                                        <a href="javascript:;"
+                                           @click="saveSummary"
+                                           v-show="modifying=='summary'">保存</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-show="passwording" >
+                            <div id="password-setting">
+                                <div><span>原密码</span><input v-model="oldPassword" type="password" placeholder="请输入原密码"></div>
+                                <div><span>新密码</span><input v-model="newPassword1" type="password" placeholder="请输入新密码"></div>
+                                <div><span>确认新密码</span><input v-model="newPassword2" type="password" placeholder="请再次输入新密码"></div>
+                                <div><div>
+                                    <a href="javascript:;" @click="clearPassword">取消</a>
+                                    <a href="javascript:;" @click="modifyPassword">修改</a>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="search-app"></div>
             </div>
             <div id="task-detail">
                 <div class="title">
                     <div>
-                        <img src="../static/img/menu/user_head.png"><i></i>
-                    </div>
+                        <img :src="user.headImg"><i></i>
+                    </div><span>[[user.nickname]]</span>
                     <div class="action">
                         <template v-if="newing">
                             <a href="javascript:;" @click="close">取消</a>
@@ -485,7 +544,14 @@
     </script>
 
     <script type="text/javascript">
+        /*
         var originData={
+            user:{
+                email:"gc@163.com",
+                nickname:"郭成",
+                summary:"项目负责人",
+                headImg:"../static/img/user.png"
+            },
             tasks:[{
                 id:'task0',
                 content:'啊啊啊',
@@ -555,6 +621,7 @@
                 },
             ],
         };
+        */
     </script>
     <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="../static/lib/vue.js"></script>
@@ -562,10 +629,13 @@
     <script type="text/javascript" src="../static/lib/perfect-scrollbar.jquery.min.js"></script>
     <script type="text/javascript" src="../static/js/class.js"></script>
     <script type="text/javascript" src="../static/js/common.js"></script>
+    <script type="text/javascript" src="../static/js/setting.js"></script>
     <script type="text/javascript" src="../static/js/task.js"></script>
     <script type="text/javascript" src="../static/js/note.js"></script>
     <script type="text/javascript" src="../static/js/project.js"></script>
     <script type="text/javascript" src="../static/js/tag.js"></script>
     <script type="text/javascript" src="../static/js/main.js"></script>
+    <script type="text/javascript">
+    </script>
 </body>
 </html>

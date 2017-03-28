@@ -66,6 +66,13 @@ var nullTask={
     tags:[],
     done:false,
 };
+
+var user={
+    nickname:"用户昵称",
+    email:"",
+    summary:"",
+    headImg:"../static/img/user.png",
+}
 var confirmVM=new Vue({
     el:"#confirm",
     delimiters:["[[","]]"],
