@@ -1,84 +1,48 @@
+/*css*/
 
-var menuItems=[
-    {name:'task',cname:'任务',current:true,},
-    {name:'note',cname:'便签',current:false,},
-    {name:'project',cname:'项目',current:false,},
-    {name:'tag',cname:'标签',current:false,},
-];
-var menuItemComponent={
-    delimiters:["[[","]]"],
-    template:"#menu-item-template",
-    props:["name","cname","current"],
-    data:function () {
-        return {
-            id:"menu-"+this.name,
-        };
-    },
-    methods:{
-        choose:function () {
-            this.$emit('choose',this.name);
-        },
-    },
-}
-
-var menuVue={
-    el:"#whole-menu",
-    components:{
-        "menu-item":menuItemComponent,
-    },
-    delimiters:["[[","]]"],
-    data:{
-        systemShow:false,
-        menuItems:menuItems,
-        searching:false,
-        systeming:false,
-        showSearchBtn:false,
-        user:user,
-    },
-    methods:{
-        choose:function (name) {
-            this.menuItems.forEach(function (item) {
-                if(item.name===name){
-                    item.current=true;
-                    bus.$emit("choose-app",item.name);
-                }else{
-                    item.current=false;
-                }
-            });
-            this.searching=false;
-            this.systeming=false;
-        },
-        search:function () {
-            this.choose("");
-            this.systeming=false;
-            this.searching=true;
-        },
-        system:function () {
-            this.systeming=!this.systeming;
-        },
-        showSetting:function () {
-            this.menuItems.forEach(function (item) {
-                item.current=false;
-            });
-            bus.$emit("choose-app","setting");
-            this.searching=false;
-            this.systeming=false
-        }
-    },
-};
+require("../lib/jedate/skin/jedate.css");
+require("../lib/perfect-scrollbar.min.css");
+require("../css/common.css");
+require("../css/FreeToDo.css");
+require("../css/menu.css");
+require("../css/task.css");
+require("../css/note.css");
+require("../css/tag.css");
+require("../css/project.css");
+require("../css/setting.css");
 
 
-var menuVM=new Vue(menuVue);
-var noteAppVM=new Vue(noteAppVue);
-var projectAppVM=new Vue(projectAppVue);
-var tagAppVM=new Vue(tagAppVue);
-var taskAppVM=new Vue(taskAppVue);
-var taskDetailVM=new Vue(taskDetailVue);
-var settingVM=new Vue(settingVue);
+var noteModule=require('./note'),
+    menuModule=require('./menu'),
+    projectModule=require('./project'),
+    tagModule=require('./tag'),
+    commonModule=require('./common'),
+    taskModule=require('./task'),
+    settingModule=require('./setting'),
+    classModule=require('./class');
+
+
+var showMessage=commonModule.showMessage,
+    user=commonModule.user,
+    bus=commonModule.bus,
+    Task=classModule.Task,
+    Tag=classModule.Tag,
+    Project=classModule.Project,
+    Note=classModule.Note,
+    nullTask=taskModule.nullTask;
+
+
+var menuVM=menuModule.menuVM;
+var noteAppVM=noteModule.noteAppVM;
+var projectAppVM=projectModule.projectAppVM;
+var tagAppVM=tagModule.tagAppVM;
+var taskAppVM=taskModule.taskAppVM;
+var taskDetailVM=taskModule.taskDetailVM;
+var settingVM=settingModule.settingVM;
+
 
 function initData() {
     function _init(originData) {
-
         user.email=originData.user.email;
         user.nickname=originData.user.nickname;
         user.summary=originData.user.summary;
@@ -90,7 +54,7 @@ function initData() {
         noteAppVM.notesAll=originData.notes.map(function (item) {
             return new Note(item.id,item.content,item.createTime);
         });
-        noteAppVue.created.apply(noteAppVM);
+        noteModule.noteAppVue.created.apply(noteAppVM);
         tagAppVM.tags=originData.tags.map(function (item) {
             return new Tag(item.id,item.name,[],item.createTime);
         });
@@ -152,16 +116,13 @@ function initData() {
         },
         error:function () {
             showMessage("网络未连通?",false);
-            //_init(originData);
+            _init(originData);
         }
     });
 
 }
-
 $(document).ready(function () {
-
     initData();
-
     //bus
     var openTaskDeail=function () {
         $("#task-detail").animate({width: "400px"}, 200, "linear");
@@ -195,9 +156,7 @@ $(document).ready(function () {
 
 //目录应用
 
-
 //任务应用
-
     $("#task-detail-start-time-input").jeDate({
         format:'YYYY-MM-DD hh:mm',
         isClear:false,
@@ -245,3 +204,6 @@ $(document).ready(function () {
     $("#tag-tasks-container >div").perfectScrollbar();
     
 });
+
+module.exports={
+}

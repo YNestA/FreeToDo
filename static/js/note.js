@@ -1,6 +1,13 @@
 /**
  * Created by yang on 17-3-9.
  */
+var classModule=require('./class'),
+    commonModule=require('./common');
+
+var Note=classModule.Note,
+    showMessage=commonModule.showMessage,
+    confirmVM=commonModule.confirmVM;
+
 var noteComponent={
     template:"#note-template",
     delimiters:["[[","]]"],
@@ -135,7 +142,10 @@ var noteAppVue={
         }
     },
 };
-$(document).ready(function () {
-    
-    
-});
+
+var noteAppVM=new Vue(noteAppVue);
+
+module.exports={
+    noteAppVM:noteAppVM,
+    noteAppVue:noteAppVue,
+}

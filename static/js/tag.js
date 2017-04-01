@@ -1,3 +1,13 @@
+var classModule=require('./class'),
+    commonModule=require('./common');
+
+var axixTasksComponent=commonModule.axixTasksComponent,
+    timer=commonModule.timer,
+    showMessage=commonModule.showMessage,
+    Tag=classModule.Tag,
+    confirmVM=commonModule.confirmVM,
+    bus=commonModule.bus;
+
 var tagComponent={
     template:"#tag-template",
     delimiters:['[[',']]'],
@@ -8,6 +18,7 @@ var tagComponent={
         },
     },
 };
+
 var tagTasksComponent={
     template:"#tag-tasks-template",
     delimiters:['[[',']]'],
@@ -49,16 +60,6 @@ var tagTasksComponent={
         },
     },
 };
-var tasks=[new Task({
-                id:'0',
-                content:'啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊',
-                level:1,
-                createTime:"2017-03-02 00:00",
-                startTime:"2017-03-01 00:00",
-                endTime:"2017-03-01 00:00",
-                project:new Project(nullProject),
-                tags:[],
-                done:false}),];
 
 var tagAppVue={
     el:"#tag-app",
@@ -150,7 +151,9 @@ var tagAppVue={
         },
     },
 };
-$(document).ready(function () {
 
+var tagAppVM=new Vue(tagAppVue);
 
-});
+module.exports={
+    tagAppVM:tagAppVM,
+}

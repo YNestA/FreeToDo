@@ -477,15 +477,15 @@ div.create-time span.more-set{
 #task-detail-time i{
     width: 14px;
     height: 15px;
-    background:url(../img/icon.png) -15px -145px;
+    background:url('../img/icon.png') -15px -145px;
 }
 #task-detail-time i:first-child{
     width: 32px;
     height: 32px;
-    background:url(../img/icon.png)  0 -360px;
+    background:url('../img/icon.png')  0 -360px;
 }
 #task-detail-time:hover i:first-child{
-    background: url(../img/icon.png) -32px -360px;
+    background: url('../img/icon.png') -32px -360px;
 }
 #task-detail-time input{
     box-sizing: border-box;
@@ -502,10 +502,10 @@ div.create-time span.more-set{
 #task-detail-project >i:first-child{
     width: 32px;
     height: 32px;
-    background: url(../img/icon.png) 0 -425px;
+    background: url('../img/icon.png') 0 -425px;
 }
 #task-detail-project:hover >i:first-child{
-    background: url(../img/icon.png) -32px -425px;
+    background: url('../img/icon.png') -32px -425px;
 }
 #task-detail-project:hover >i:last-child{
     display: block;
@@ -518,7 +518,7 @@ div.create-time span.more-set{
     display: none;
     width: 32px;
     height: 32px;
-    background-image: url(../img/icon.png) ;
+    background-image: url('../img/icon.png') ;
     background-position: 0px -748px;
 }
 #task-detail-project >i:last-child.show{
@@ -541,10 +541,10 @@ div.create-time span.more-set{
 #task-detail-tags >i{
     width: 32px;
     height: 32px;
-    background: url(../img/icon.png) 0 -457px;
+    background: url('../img/icon.png') 0 -457px;
 }
 #task-detail-tags:hover >i{
-    background: url(../img/icon.png) -32px -457px;
+    background: url('../img/icon.png') -32px -457px;
 }
 #task-detail-tags >span{
     display: inline-block;
@@ -577,13 +577,13 @@ span.task-detail-tag i{
     width: 25px;
     height: 25px;
     cursor: pointer;
-    background: url(../img/icon.png) 1px -754px;
+    background: url('../img/icon.png') 1px -754px;
 }
 #task-detail-tags span.task-detail-tag:hover i{
     display: inline-block;
 }
 span.task-detail-tag i:hover{
-    background: url(../img/icon.png) -31px -754px;
+    background: url('../img/icon.png') -31px -754px;
 }
 #task-detail-tags span.task-detail-tag:hover{
     border-color: #3fb6da;
@@ -617,7 +617,7 @@ span.task-detail-tag i:hover{
     display: block;
     width: 100%;
     height: 100%;
-    background-image: url(../img/icon.png);
+    background-image: url('../img/icon.png');
     background-position: -32px -72px;
     transition: all 0.1s;
 }
@@ -673,7 +673,7 @@ label.level-btn input+span{
     cursor: pointer;
     width: 24px;
     height: 24px;
-    background-image: url(../img/icon.png);
+    background-image: url('../img/icon.png');
 }
 label.level-btn-1 input+span{
     background-position: -4px -591px;
@@ -722,7 +722,7 @@ div.axix-add-setting-time input{
 div.axix-add-setting-time i{
     width: 25px;
     height: 25px;
-    background: url(../img/icon.png) -4px -138px;
+    background: url('../img/icon.png') -4px -138px;
 }
 div.axix-add-setting-time+div{
     margin-left: 10px;
@@ -824,7 +824,7 @@ label.level-done-btn input+span{
     width: 31px;
     height: 31px;
     cursor: pointer;
-    background-image: url(../img/icon.png);
+    background-image: url('../img/icon.png');
 }
 
 label.level-done-btn-1 input+span{
@@ -880,7 +880,7 @@ label.level-done-btn-4 input:checked+span{
 .axix-task-content+div i:first-child{
     width: 24px;
     height: 24px;
-    background:url(../img/icon.png) -4px -364px;
+    background:url('../img/icon.png') -4px -364px;
 }
 .axix-task-content+div time{
     height: 24px;
@@ -891,7 +891,7 @@ label.level-done-btn-4 input:checked+span{
     height: 24px;
     width: 24px;
     margin-left: 10px;
-    background: url(../img/icon.png) -4px -267px;
+    background: url('../img/icon.png') -4px -267px;
 }
 
 #task-detail-project-list,#task-detail-tags-list{
@@ -931,7 +931,7 @@ label.level-done-btn-4 input:checked+span{
     margin-right: 5px;
     width: 25px;
     height: 40px;
-    background-image: url(../img/icon.png);
+    background-image: url('../img/icon.png');
     background-position: -3px -711px;
 }
 

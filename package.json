@@ -1,0 +1,31 @@
+{
+  "name": "freetodo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "webpack": "^2.3.2"
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.0",
+    "file-loader": "^0.11.0",
+    "style-loader": "^0.16.1",
+    "url-loader": "^0.5.8",
+    "webpack": "^2.3.2",
+    "webpack-dev-server": "^2.4.2"
+  },
+  "scripts": {
+    "start": "webpack --watch -p",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YNestA/FreeToDo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YNestA/FreeToDo/issues"
+  },
+  "homepage": "https://github.com/YNestA/FreeToDo#readme"
+}

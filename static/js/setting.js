@@ -1,6 +1,11 @@
 /**
  * Created by yang on 17-3-27.
  */
+var commonModule=require('./common');
+
+var user=commonModule.user,
+    showMessage=commonModule.showMessage;
+
 var settingVue={
     el:"#setting-app",
     delimiters:["[[","]]"],
@@ -24,6 +29,7 @@ var settingVue={
         },
         modifySummary:function () {
             this.modifying="summary";
+            var that=this;
             $("html,body").click(function () {
                 that.modifying="";
                 $("html,body").unbind("click",arguments.callee);
@@ -168,3 +174,9 @@ var settingVue={
         }
     }
 };
+
+var settingVM=new Vue(settingVue);
+
+module.exports={
+    settingVM:settingVM,
+}

@@ -103,7 +103,7 @@
 #tags ul li >div:first-child i{
     width: 30px;
     height: 30px;
-    background: url(../img/icon.png) 0 -1485px;
+    background: url('../img/icon.png') 0 -1485px;
 }
 #tags ul li >div:first-child span{
     width: 140px;
@@ -124,7 +124,7 @@ div.tag-tasks-count{
     right: 0;
     width: 32px;
     height: 32px;
-    background: url(../img/icon.png) 0 -1262px;
+    background: url('../img/icon.png') 0 -1262px;
 }
 #tags ul li:hover >a{
     display: block;
@@ -251,7 +251,7 @@ div.tag-tasks-count{
     cursor: pointer;
     width: 32px;
     height: 32px;
-    background-image: url(../img/icon.png);
+    background-image: url('../img/icon.png');
     background-position: 0 -748px;
 }
 #tag-adder i:hover{

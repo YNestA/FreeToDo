@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FreeToDo</title>
+</head>
+<body>
+    <div id="whole-container">
+        <div id="message"></div>
+        <div v-show="showThis" id="confirm">
+            <div>
+                <div id="confirm-title">[[title]]</div>
+                <div id="confirm-content">[[content]]</div>
+                <div id="confirm-btn">
+                    <a href="javascript:;" @click="yes">确认</a>
+                    <a href="javascript:;" @click="no">取消</a>
+                </div>
+                <i @click="showThis=false"></i>
+            </div>
+        </div>
+        <div id="whole-menu">
+            <div id="user-head">
+                <img :src="user.headImg">
+                <i></i>
+            </div>
+            <div id="user-name">[[user.nickname]]</div>
+            <nav>
+                <ul>
+                    <menu-item
+                            :name="item.name"
+                            :cname="item.cname"
+                            :current="item.current"
+                            @choose="choose"
+                            v-for="item in menuItems">
+                    </menu-item>
+                </ul>
+            </nav>
+            <div id="bottom-menu">
+                <ul>
+                    <li id="menu-search" :class="{current:searching}" @click="search" v-if="showSearchBtn"><i></i></li>
+                    <li id="menu-system" @click="system">...</li>
+                    <ul v-show="systeming" id="system">
+                            <li @click="showSetting">帐号设置</li>
+                            <li>使用帮助</li>
+                            <li><a href="../Logout/">退出登录</a></li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+        <div id="main">
+            <div id="apps-warp">
+                <div v-show="showThis" id="task-app">
+                    <div class="task-app-title">
+                    <div class="title-left">
+                        <span class="date">
+                            [[currentDate]]
+                        </span>
+                        <i class="date-left-btn" @click="dateGo('-')"></i>
+                        <i class="date-right-btn" @click="dateGo('+')"></i>
+                        <a class="today-btn" href="javascript:;" @click="setToday">今天</a>
+                        <ul>
+                            <li :class="[dateType=='day'?'current':'',]" @click="setDateType('day')">日</li>
+                            <li :class="[dateType=='week'?'current':'',]" @click="setDateType('week')">周</li>
+                            <li :class="[dateType=='month'?'current':'',]" @click="setDateType('month')">月</li>
+                        </ul>
+                    </div>
+                    <div class="title-right">
+                        <select v-model="axixing" class="right-menu1">
+                            <option :value="false">四象限</option>
+                            <option :value="true">时间轴</option>
+                        </select>
+                        <select v-model="tasksType" class="right-menu2">
+                            <option value="all">全部</option>
+                            <option value="done">已完成</option>
+                            <option value="notDone">未完成</option>
+                        </select><a class="create-task" @click="createTask">+</a>
+                    </div>
+                </div>
+                    <div v-show="!axixing" id="four-quadrant">
+                    <div class="four-top">
+                        <quadrant :level="1"
+                                  :tasks="tasks1"
+                                  @new-task="newTask">
+                            <span slot="rankDesc" class="rank-desc">很重要-很紧急</span>
+                        </quadrant>
+                        <quadrant :level="2"
+                                  :tasks="tasks2"
+                                  @new-task="newTask">
+                            <span slot="rankDesc" class="rank-desc">重要-不紧急</span>
+                        </quadrant>
+                    </div>
+                    <div class="four-bottom">
+                        <quadrant :level="3"
+                                  :tasks="tasks3"
+                                  @new-task="newTask">
+                            <span slot="rankDesc" class="rank-desc">不重要-紧急</span>
+                        </quadrant>
+                        <quadrant :level="4"
+                                  :tasks="tasks4"
+                                  @new-task="newTask">
+                            <span slot="rankDesc" class="rank-desc">不重要-不紧急</span>
+                        </quadrant>
+                    </div>
+                </div>
+                    <div v-show="axixing" id="time-axix">
+                    <div id="axix-add">
+                        <div :class="['axix-add-icon',axixAdding?'axix-adding-icon':'']" @click="axixAdding=!axixAdding"><i></i></div>
+                        <transition-group name="axix-add" tag="div">
+                            <div v-show="!axixAdding" class="axix-add-btn" key="1">
+                                <div>新建任务</div>
+                            </div>
+                            <div v-show="axixAdding" class="axix-add-detail" key="2">
+                                <div class="axix-add-input"><input ref="axixAddInput" v-model="axixContent" type="text" placeholder="按Enter完成输入" @keyup.enter="axixNewTask"></div>
+                                <div class="axix-add-setting">
+                                    <label class="level-btn level-btn-1"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="1"><span></span></label>
+                                    <label class="level-btn  level-btn-2"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="2"><span></span></label>
+                                    <label class="level-btn level-btn-3"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="3"><span></span></label>
+                                    <label class="level-btn level-btn-4"><input v-model="axixLevel" type="radio" name="axix-add-level" :value="4"><span></span></label>
+                                    <div class="axix-add-setting-time">
+                                        <input class="add-start-time-input" ref="axixStartTime" type="text" placeholder="选择开始日期" readonly><i></i><input class="add-end-time-input" ref="axixEndTime" type="text" placeholder="选择结束日期" readonly></div>
+                                    <div>...</div>
+                                </div>
+                            </div>
+                        </transition-group>
+                    </div>
+                    <div id="task-axix">
+                        <hr class="axix-hr">
+                        <axix-tasks :tasks="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
+                        <axix-tasks :tasks="value" :day="key" v-for="(value,key) in axixTasks">
+                        </axix-tasks>
+                    </div>
+                </div>
+                </div>
+                <div v-show="showThis" id="note-app">
+                    <div id="note-app-title">便签</div>
+                    <div id="notes">
+                        <div id="notes-add">
+                            <a id="add-note-btn" href="javascript:;"
+                                :class="{'adding':adding}"
+                                @click="adding=!adding"
+                            ><img src="../static/img/note/add_note_0.png"></a>
+                            <transition name="note-input">
+                                <div id="note-input" v-show="adding">
+                                    <textarea placeholder="Add a note ~~~" spellcheck="false"
+                                                v-model="newNoteContent"
+                                                ref="noteInput"
+                                                @keyup="dealNoteInput($event)"
+                                    ></textarea>
+                                    <span>按Ctrl+Enter确认/按Enter换行</span>
+                                </div>
+                            </transition>
+                            <span>添加便签</span>
+                        </div>
+                        <div>
+                        <ul ref="notes1">
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="1"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes1">
+                                </note>
+                            </transition-group>
+                        </ul>
+                        <ul ref="notes2" >
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="2"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes2">
+                                </note>
+                            </transition-group>
+                        </ul>
+                        <ul ref="notes3" >
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="3"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes3">
+                                </note>
+                            </transition-group>
+                        </ul>
+                        <ul ref="notes4">
+                            <transition-group name="note">
+                                <note :note="note"
+                                      :key="note"
+                                      ul="4"
+                                      @delete-note="deleteNote"
+                                      v-for="note in notes4">
+                                </note>
+                            </transition-group>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="showThis" id="project-app">
+                    <div id="projects">
+                        <div id="projects-title">
+                            <a id="nf-project-btn" :class={'current':!showFile} href="javascript:;" @click="showFile=false">活动项目</a>
+                            <a id="f-project-btn" :class="{'current':showFile}" href="javascript:;" @click="showFile=true">归档项目</a>
+                            <a id="create-project-btn" href="javascript:;" @click="managerAdd">+</a>
+                        </div>
+                        <div id="projects-container">
+                            <div v-show="showFile">
+                                <transition-group name="project" tag="ul">
+                                    <project
+                                            :project="project"
+                                            :key="project"
+                                            @click.native="lookProjectTasks(project)"
+                                            @modify-req="modifyReq"
+                                            @delete-project="deleteProject"
+                                            v-for="project in fProjects">
+                                    </project>
+                                </transition-group>
+                            </div>
+                            <div v-show="!showFile">
+                                <transition-group name="project" tag="ul">
+                                    <project
+                                            :project="project"
+                                            :key="project"
+                                            @click.native="lookProjectTasks(project)"
+                                            @modify-req="modifyReq"
+                                            @delete-project="deleteProject"
+                                            v-for="project in nfProjects">
+                                    </project>
+                                </transition-group>
+                            </div>
+                        </div>
+                    </div>
+                    <project-tasks :project="currentProject">
+                    </project-tasks>
+                    <project-manager v-show="showManager"
+                                     :type="managerType"
+                                     :id="managerId"
+                                     :name="managerName"
+                                     :content="managerContent"
+                                     @close-manager="showManager=false"
+                                     @new-project="newProject"
+                                     @modify-project="modifyProject"
+                    ></project-manager>
+                </div>
+                <div v-show="showThis" id="tag-app">
+                    <div id="tags">
+                        <div id="tags-title">标签<a id="create-tag-btn" href="javascript:;" @click="tagAdding=true">+</a></div>
+                        <div id="tags-container">
+                            <div>
+                            <transition-group name="tags" tag="ul">
+                                <tag :tag="tag"
+                                     :key="tag"
+                                     @delete-tag="deleteTag"
+                                     @click.native="lookTagTasks(tag)"
+                                     v-for="tag in tags"></tag>
+                            </transition-group>
+                            </div>
+                        </div>
+                    </div>
+                    <tag-tasks
+                        :tag="currentTag">
+                    </tag-tasks>
+                    <div id="tag-adder" v-show="tagAdding">
+                        <div>
+                            <div class="tag-adder-title">新建标签</div>
+                            <div class="tag-adder-input">
+                                <span>标签名称</span>
+                                <input v-model="newTagName" placeholder="请输入标签名称">
+                            </div>
+                            <div class="tag-adder-btn"><a @click="newTag" href="javascript:;">创建</a></div>
+                            <i @click="tagAdding=false"></i>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="showThis" id="setting-app">
+                    <div id="setting-title">
+                        <a :class="{'current':!passwording}" href="javascript:;" @click="passwording=false">个人资料</a>
+                        <a :class="{'current':passwording}" href="javascript:;" @click="passwording=true">修改密码</a>
+                    </div>
+                    <div id="setting-container">
+                        <div v-show="!passwording">
+                            <div id="profile-setting">
+                                <div id="profile-head"><span>头像</span>
+                                    <div>
+                                        <div>
+                                            <img :src="headImg">
+                                            <a href="javascript:;" @click="$refs.headInput.click()">重新上传</a>
+                                            <input type="file" ref="headInput" @change="uploadHead">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="profile-nickname" :class="{'current':modifying=='nickname',}"><span>昵称</span>
+                                    <div><input v-model="nickname" @click.stop ref="nicknameInput" type="text" :readonly="modifying!='nickname'">
+                                        <a href="javascript:;"
+                                           v-show="modifying!='nickname'"
+                                           @click.stop="modifyNickname">编辑</a>
+                                        <a href="javascript:;"
+                                           @click="saveNickname"
+                                           v-show="modifying=='nickname'">保存</a>
+                                    </div>
+                                </div>
+                                <div id="profile-email"><span>邮箱</span>
+                                    <div>
+                                        <input type="text" v-model="email" readonly>
+                                    </div>
+                                </div>
+                                <div id="profile-summary" :class="{'current':modifying=='summary'}"><span>简介</span>
+                                    <div>
+                                        <input v-model="summary"  @click.stop ref="summaryInput" type="text" :readonly="modifying!='summary'">
+                                        <a href="javascript:;"
+                                           @click.stop="modifySummary"
+                                           v-show="modifying!='summary'">编辑</a>
+                                        <a href="javascript:;"
+                                           @click="saveSummary"
+                                           v-show="modifying=='summary'">保存</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-show="passwording" >
+                            <div id="password-setting">
+                                <div><span>原密码</span><input v-model="oldPassword" type="password" placeholder="请输入原密码"></div>
+                                <div><span>新密码</span><input v-model="newPassword1" type="password" placeholder="请输入新密码"></div>
+                                <div><span>确认新密码</span><input v-model="newPassword2" type="password" placeholder="请再次输入新密码"></div>
+                                <div><div>
+                                    <a href="javascript:;" @click="clearPassword">取消</a>
+                                    <a href="javascript:;" @click="modifyPassword">修改</a>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="search-app"></div>
+            </div>
+            <div id="task-detail">
+                <div class="title">
+                    <div>
+                        <img :src="user.headImg"><i></i>
+                    </div><span>[[user.nickname]]</span>
+                    <div class="action">
+                        <template v-if="newing">
+                            <a href="javascript:;" @click="close">取消</a>
+                            <a href="javascript:;" @click="newTask">保存</a>
+                        </template>
+                        <template v-else>
+                            <a class="delete" href="javascript:;" @click="deleteTask">删除</a>
+                            <a href="javascript:;" @click="close">关闭</a>
+                        </template>
+                    </div>
+                </div>
+                <ul>
+                    <li id="task-detail-content" :class="'task-detail-content-'+task.level"><label @click.prevent="toggleDone" v-if="!newing" :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label><input ref="contentInput" :value="task.content" @input="changeContent($event)" type="text" placeholder="输入任务内容" @keyup.enter="modifyContent"></li>
+                    <li id="task-detail-level">
+                        <label @click.prevent="modifyLevel(1)" class="level-btn level-btn-1"><input v-model="task.level" type="radio" name="level" :value="1"><span></span></label><span v-show="task==1">很重要-很紧急</span>
+                        <label @click.prevent="modifyLevel(2)" class="level-btn level-btn-2"><input v-model="task.level" type="radio" name="level" :value="2"><span></span></label><span v-show="task==2">重要-不紧急</span>
+                        <label @click.prevent="modifyLevel(3)" class="level-btn level-btn-3"><input v-model="task.level" type="radio" name="level" :value="3"><span></span></label><span v-show="task==3">不重要-紧急</span>
+                        <label @click.prevent="modifyLevel(4)" class="level-btn level-btn-4"><input v-model="task.level" type="radio" name="level" :value="4"><span></span></label><span v-show="task==4">不重要-不紧急</span>
+                    </li>
+                    <li id="task-detail-time"><i></i><input :value="startTime" ref="startTimeInput" id="task-detail-start-time-input" class="start-time-input" type="text" placeholder="选择开始日期"><i></i><input :value="endTime" ref="endTimeInput" class="end-time-input" id="task-detail-end-time-input" type="text" placeholder="选择结束日期"></li>
+                    <li id="task-detail-project"><i></i><input @click.stop="showProjects" v-model="project.name" type="text" placeholder="项目名称">
+                        <ul v-show="showProjectList" id="task-detail-project-list">
+                            <li :class="[project.id==task.project.id?'current':'']"
+                                @click="chooseProject(project)"
+                                v-for="project in projectList">
+                                <i></i>[[project.name]]
+                            </li>
+                        </ul>
+                        <i :class="[task.project.id?'':'show']" @click="cancelProject"></i>
+                    </li>
+                    <li id="task-detail-tags"><i></i>
+                        <span class="task-detail-tag" v-for="tag in tags">[[tag.name]]<i @click="cancelTag(tag)"></i></span>
+                        <input type="text" placeholder="+标签" readonly @click.stop="showTags" >
+                        <ul v-show="showTagsList" id="task-detail-tags-list">
+                            <li
+                                @click="chooseTag(tag)"
+                                v-for="tag in tagList">
+                                <i></i>[[tag.name]]
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="loading-background"><span><img src="../static/img/loading.gif"></span></div>
+    <script type="x-template" id="menu-item-template">
+        <li :id="id" :class="{current:current}" @click="choose">
+            <i></i>[[cname]]
+        </li>
+    </script>
+    <script type="x-template" id="quadrant-template">
+        <div :id="quadrantID" class="quadrant">
+            <div class="rank-line" @click.stop="clickAdd">
+                <slot name="rankDesc"></slot>
+                <a class="add" href="javascript:;">+</a>
+                <transition name="add">
+                    <div v-show="adding" class="task-create" @click.stop="">
+                        <div class="create-input"><input v-model="newContent" ref="contentInput" type="text" placeholder="输入任务，按Enter键完成" @keyup.enter="newTask"><i></i></div>
+                        <div class="create-time">
+                            <input ref="startTime" class="add-start-time-input" type="text" readonly><i></i><input ref="endTime" class="add-end-time-input" type="text" readonly><span class="more-set">...</span>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+            <transition-group name="tasks" tag="ul">
+                <li :key="task"
+                    @click="chooseTask(task)"
+                    v-for="task in tasks">
+                    <label @click.stop.prevent="toggleDone(task)">
+                        <input v-model="task.done" type="checkbox">
+                        <span></span>
+                    </label>
+                    <span>[[task.content]]</span><time>[[task.startTime]]</time>
+                </li>
+            </transition-group>
+        </div>
+    </script>
+    <script type="x-template" id="axix-tasks-template">
+        <div class="axix-tasks">
+            <div class="axix-tasks-title">
+                <i></i>
+                <time>[[day]]</time>
+            </div>
+            <ul>
+                <li v-for="task in tasks">
+                    <time>[[task.createTime.slice(-5)]]</time>
+                    <label @click.stop.prevent="toggleDone(task)" :class="['level-done-btn','level-done-btn-'+task.level]"><input v-model="task.done" type="checkbox"><span></span></label>
+                    <div @click="chooseTask(task)">
+                        <div class="axix-task-content">[[task.content]]</div>
+                        <div><i></i><time>[[task.startTime]]</time><i></i></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </script>
+    <script type="x-template" id="note-template">
+        <li class="note-li" >
+            <span class="note-delete-btn" title="撕掉便签" @click="deleteNote"></span>
+            <div class="note">
+                <span>[[note.createTime]]</span>
+                <p v-for="ph in phs">[[ph]]</p>
+            </div>
+        </li>
+    </script>
+    <script type="x-template" id="tag-template">
+        <li>
+            <div><i></i><span>[[tag.name]]</span></div>
+            <div class="tag-tasks-count">任务数([[tag.tasks.length]])</div>
+            <a href="javascript:;" @click.stop="deleteTag"></a>
+        </li>
+    </script>
+    <script type="x-template" id="tag-tasks-template">
+        <div id="tag-tasks">
+            <div id="tag-tasks-title">标签"[[tag.name]]"的任务
+                <a id="create-tag-task-btn" href="javascript:;" @click="createTask">+</a>
+                <select v-model="tasksType">
+                    <option value="all">全部</option>
+                    <option value="done">已完成</option>
+                    <option value="notDone">未完成</option>
+                </select>
+            </div>
+            <div id="tag-tasks-container">
+                <div>
+                    <hr class="axix-hr">
+                    <axix-tasks :tasks="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
+                    <axix-tasks :tasks="value" :day="key" v-for="(value,key) in axixTasks"></axix-tasks>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="x-template" id="project-template">
+        <li>
+            <div class="project-ear"></div>
+            <div class="project-name">[[project.name]]</div>
+            <div class="project-info">
+                <span>[[project.tasks.length]]<br>总任务</span>
+                <span>[[doneTasks.length]]<br>已完成</span>
+                <span>[[progress]]<br>进度</span>
+            </div>
+            <div class="project-op" :style="[showMenu?{display:'block'}:{}]" @click.stop="openMenu">
+                <i></i>
+            </div>
+            <div v-show="showMenu" class="project-op-menu" >
+                    <template v-if="!project.isFile">
+                        <div @click.stop="modifyReq">编辑</div>
+                        <div @click.stop="fileProject">归档</div>
+                    </template>
+                    <template v-else>
+                        <div @click.stop="nfileProject">取消归档</div>
+                    </template>
+                    <div @click.stop="deleteProject">删除</div>
+            </div>
+        </li>
+    </script>
+    <script type="x-template" id="project-tasks-template">
+        <div id="project-tasks">
+            <div id="project-tasks-title">项目"[[project.name]]"的任务
+                <a id="create-project-task-btn" href="javascript:;" @click="createTask">+</a>
+                <select v-model="tasksType">
+                    <option value="all">全部</option>
+                    <option value="done">已完成</option>
+                    <option value="notDone">未完成</option>
+                </select>
+            </div>
+            <div id="project-tasks-container">
+                <div>
+                    <hr class="axix-hr">
+                    <axix-tasks :tasks="[]" day="没有任务" v-show="_isEmptyObject(axixTasks)"></axix-tasks>
+                    <axix-tasks :tasks="value" :day="key" v-for="(value,key) in axixTasks"></axix-tasks>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="x-template" id="project-manager-template">
+        <div id="project-manager">
+            <div>
+                <div id="project-manager-title">
+                    <template v-if="type=='add'">新建项目</template>
+                    <template v-else>修改项目</template></div>
+                <div id="project-manager-name">
+                    <span>项目名称</span>
+                    <input v-model="newName" placeholder="请输入项目名称">
+                </div>
+                <div id="project-manager-content">
+                    <span>项目简介</span>
+                    <textarea v-model="newContent" spellcheck="false"></textarea>
+                </div>
+                <div id="project-manager-btn">
+                    <a @click="newProject" href="javascript:;" v-if="type=='add'">创建</a>
+                    <a @click="modifyProject" href="javascript:;" v-else>修改</a>
+                </div>
+                <i @click="closeManager"></i>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        var originData={
+            user:{
+                email:"gc@163.com",
+                nickname:"郭成",
+                summary:"项目负责人",
+                headImg:"../static/img/user.png"
+            },
+            tasks:[{
+                id:'task0',
+                content:'啊啊啊',
+                level:1,
+                createTime:"2017-03-20 19:00",
+                startTime:"2017-03-20 19:00",
+                endTime:"2017-03-21 20:00",
+                project:"pro0",
+                tags:["tag0",],
+                done:false
+            }],
+            notes:[{
+                id:'note0',
+                content:"啊啊啊啊",
+                createTime:"2017-04-20 18:00",
+            },],
+            projects:[
+                {
+                    id:'pro0',
+                    name:'啊啊啊啊',
+                    content:"啊啊啊啊啊啊啊啊啊啊",
+                    tasks:["task0"],
+                    isFile:false,
+                    createTime:'2017-05-01 15:30',
+                },
+                {
+                    id:'pro1',
+                    name:'啊啊',
+                    content:"啊啊啊啊啊啊啊啊啊啊",
+                    tasks:[],
+                    isFile:false,
+                    createTime:'2017-05-01 15:30',
+                },
+                {
+                    id:'pro2',
+                    name:'啊啊',
+                    content:"啊啊啊啊啊啊啊啊啊啊",
+                    tasks:[],
+                    isFile:false,
+                    createTime:'2017-05-01 15:30',
+                },
+            ],
+            tags:[
+                {
+                    id:"tag0",
+                    name:"啊",
+                    tasks:["task0"],
+                    createTime:"2017-04-20 18:00",
+                },
+                {
+                    id:"tag1",
+                    name:"啊啊啊啊啊啊啊",
+                    tasks:[],
+                    createTime:"2017-04-20 18:00",
+                },
+                {
+                    id:"tag2",
+                    name:"啊啊啊",
+                    tasks:[],
+                    createTime:"2017-04-20 18:00",
+                },
+                {
+                    id:"tag3",
+                    name:"啊啊啊",
+                    tasks:[],
+                    createTime:"2017-04-20 18:00",
+                },
+            ],
+        };
+    </script>
+    <script type="text/javascript" src="../static/lib/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="../static/lib/vue.js"></script>
+    <script type="text/javascript" src="../static/lib/jedate/jquery.jedate.js"></script>
+    <script type="text/javascript" src="../static/lib/perfect-scrollbar.jquery.min.js"></script>
+    <script type="text/javascript" src="../build/FreeToDo.js"></script>
+</body>
+</html>

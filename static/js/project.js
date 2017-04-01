@@ -1,6 +1,24 @@
 /**
  * Created by yang on 17-3-14.
  */
+var classModule=require('./class')
+    commonModule=require('./common');
+
+var axixTasksComponent=commonModule.axixTasksComponent,
+    bus=commonModule.bus,
+    Project=classModule.Project,
+    timer=commonModule.timer,
+    showMessage=commonModule.showMessage;
+
+var nullProject={
+    id:'',
+    name:'',
+    content:"",
+    tasks:[],
+    isFile:false,
+    createTime:''
+};
+
 var projectTasksComponent={
     template:"#project-tasks-template",
     delimiters:['[[',']]'],
@@ -42,6 +60,7 @@ var projectTasksComponent={
         },
     },
 };
+
 var projectComponent={
     template:"#project-template",
     delimiters:['[[',']]'],
@@ -128,6 +147,7 @@ var projectComponent={
         },
     },
 };
+
 var projectManagerComponent={
     template:"#project-manager-template",
     delimiters:['[[',']]'],
@@ -354,7 +374,10 @@ var projectAppVue={
         },
     },
 };
-$(document).ready(function () {
 
-    
-});
+var projectAppVM=new Vue(projectAppVue);
+
+module.exports={
+    nullProject:nullProject,
+    projectAppVM:projectAppVM,
+}

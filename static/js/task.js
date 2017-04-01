@@ -1,6 +1,33 @@
-/**
- * Created by yang on 17-3-19.
- */
+var classModule=require('./class'),
+    commonModule=require('./common'),
+    projectModule=require('./project'),
+    tagModule=require('./tag');
+
+var Project=classModule.Project,
+    Task=classModule.Task,
+    bus=commonModule.bus,
+    projectAppVM=projectModule.projectAppVM,
+    tagAppVM=tagModule.tagAppVM,
+    confirmVM=commonModule.confirmVM,
+    nullProject=projectModule.nullProject,
+    axixTasksComponent=commonModule.axixTasksComponent,
+    commonAjax=commonModule.commonAjax,
+    user=commonModule.user,
+    timer=commonModule.timer,
+    showMessage=commonModule.showMessage;
+
+
+var nullTask={
+    id:'',
+    content:'',
+    level:1,
+    createTime:"",
+    startTime:"",
+    endTime:"",
+    project:new Project(nullProject),
+    tags:[],
+    done:false,
+};
 
 var quadrantComponent={
     template:"#quadrant-template",
@@ -77,6 +104,7 @@ var quadrantComponent={
         }
     },
 };
+
 var taskAppVue={
     el:"#task-app",
     delimiters:['[[',']]'],
@@ -266,6 +294,7 @@ var taskAppVue={
         }
     },
 };
+
 var taskDetailVue={
     el:"#task-detail",
     delimiters:["[[","]]"],
@@ -719,3 +748,13 @@ var taskDetailVue={
         }
     }
 };
+
+var taskAppVM=new Vue(taskAppVue);
+var taskDetailVM=new Vue(taskDetailVue);
+
+module.exports={
+    nullTask:nullTask,
+    commomAjax:commonAjax,
+    taskAppVM:taskAppVM,
+    taskDetailVM:taskDetailVM,
+}

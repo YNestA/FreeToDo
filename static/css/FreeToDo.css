@@ -108,7 +108,7 @@
     width: 32px;
     height: 32px;
     position: absolute;
-    background-image: url(../img/icon.png);
+    background-image: url('../img/icon.png');
     background-position: 0 -748px;
     cursor: pointer;
 }
